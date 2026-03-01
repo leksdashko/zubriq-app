@@ -8,8 +8,11 @@
 <meta property="og:title" content="Zubriq — Вивчай слова. Одне сповіщення за раз.">
 <meta property="og:description" content="Telegram-бот, що допоможе вивчити нові слова через розумні пуш-сповіщення. Безкоштовно під час раннього доступу.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="images/img-mm8ak1ah-nf616bdf.jpg">
+<meta property="og:image" content="images/logo-full.png">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -202,11 +205,13 @@ a { color: inherit; text-decoration: none; }
   font-weight: 700; font-size: 1.2rem; color: var(--text-primary);
 }
 .nav-logo-icon {
-  width: 32px; height: 32px; border-radius: 8px;
-  background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+  width: 36px; height: 36px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 0.9rem;
 }
+.nav-logo-icon img {
+  width: 100%; height: 100%; object-fit: contain;
+}
+.nav-logo .logo-q { color: #6abf40; }
 .nav-links {
   display: flex; align-items: center; gap: 32px; list-style: none;
 }
@@ -385,9 +390,11 @@ a { color: inherit; text-decoration: none; }
   display: flex; align-items: center; gap: 7px; margin-bottom: 7px;
 }
 .phone-notif-app-icon {
-  width: 18px; height: 18px; background: var(--accent-blue);
-  border-radius: 5px; display: flex; align-items: center;
-  justify-content: center; font-size: 0.55rem; color: #fff; font-weight: 700;
+  width: 18px; height: 18px; border-radius: 5px;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.phone-notif-app-icon img {
+  width: 100%; height: 100%; object-fit: contain;
 }
 .phone-notif-app-name { font-size: 0.65rem; color: #64748b; font-weight: 600; }
 .phone-notif-time { font-size: 0.6rem; color: #64748b; margin-left: auto; }
@@ -490,9 +497,11 @@ section { padding: 100px 0; }
 }
 .demo-notif-icon {
   width: 38px; height: 38px;
-  background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
   border-radius: 10px; display: flex; align-items: center;
-  justify-content: center; flex-shrink: 0; color: #fff; font-weight: 700; font-size: 0.85rem;
+  justify-content: center; flex-shrink: 0; overflow: hidden;
+}
+.demo-notif-icon img {
+  width: 100%; height: 100%; object-fit: contain;
 }
 .demo-notif-meta { flex: 1; }
 .demo-notif-app { font-size: 0.8125rem; font-weight: 600; color: var(--text-primary); }
@@ -719,11 +728,13 @@ section { padding: 100px 0; }
   font-size: 1.1rem; color: var(--text-primary);
 }
 .footer-brand-icon {
-  width: 28px; height: 28px; border-radius: 7px;
-  background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+  width: 30px; height: 30px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 0.75rem; color: #fff;
 }
+.footer-brand-icon img {
+  width: 100%; height: 100%; object-fit: contain;
+}
+.footer-brand .logo-q { color: #6abf40; }
 .footer-links {
   display: flex; gap: 24px; flex-wrap: wrap;
 }
@@ -835,9 +846,9 @@ section { padding: 100px 0; }
   <div class="nav-inner">
     <a href="#" class="nav-logo" aria-label="Zubriq — Home">
       <span class="nav-logo-icon" aria-hidden="true">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        <img src="images/logo-icon.svg" alt="" width="36" height="36">
       </span>
-      Zubriq
+      <span>Zubri<span class="logo-q">q</span></span>
     </a>
     <ul class="nav-links">
       <li><a href="#how-it-works">Як це працює</a></li>
@@ -916,7 +927,7 @@ section { padding: 100px 0; }
             <div class="phone-notifications-label">Сповіщення</div>
             <div class="phone-notification">
               <div class="phone-notif-header">
-                <div class="phone-notif-app-icon" aria-hidden="true">Z</div>
+                <div class="phone-notif-app-icon" aria-hidden="true"><img src="images/logo-icon.svg" alt="" width="18" height="18"></div>
                 <span class="phone-notif-app-name">Zubriq</span>
                 <span class="phone-notif-time">зараз</span>
               </div>
@@ -926,7 +937,7 @@ section { padding: 100px 0; }
             </div>
             <div class="phone-notification phone-notification-faded">
               <div class="phone-notif-header">
-                <div class="phone-notif-app-icon" aria-hidden="true">Z</div>
+                <div class="phone-notif-app-icon" aria-hidden="true"><img src="images/logo-icon.svg" alt="" width="18" height="18"></div>
                 <span class="phone-notif-app-name">Zubriq</span>
                 <span class="phone-notif-time">2 хв тому</span>
               </div>
@@ -1007,7 +1018,7 @@ section { padding: 100px 0; }
       <div class="demo-card-wrapper reveal reveal-delay-1">
         <div class="demo-card" id="demoCard" role="button" tabindex="0" aria-label="Інтерактивне демо сповіщення. Натисни, щоб побачити як працює.">
           <div class="demo-notif-bar">
-            <div class="demo-notif-icon" aria-hidden="true">Z</div>
+            <div class="demo-notif-icon" aria-hidden="true"><img src="images/logo-icon.svg" alt="" width="38" height="38"></div>
             <div class="demo-notif-meta">
               <div class="demo-notif-app">Zubriq</div>
               <div class="demo-notif-time">Щойно</div>
@@ -1256,9 +1267,9 @@ section { padding: 100px 0; }
     <div class="footer-inner">
       <div class="footer-brand">
         <span class="footer-brand-icon" aria-hidden="true">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <img src="images/logo-icon.svg" alt="" width="30" height="30">
         </span>
-        Zubriq
+        <span>Zubri<span class="logo-q">q</span></span>
       </div>
       <div class="footer-links">
         <a href="https://t.me/zubriq_bot" target="_blank" rel="noopener">Telegram-бот</a>
