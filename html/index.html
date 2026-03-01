@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zubriq — Вивчай слова через Telegram-сповіщення | Безкоштовний бот для словникового запасу</title>
+<meta name="description" content="Zubriq — Telegram-бот, що надсилає розумні сповіщення зі словами для запам'ятовування. Додай слова будь-якою мовою, обери темп і вчи нові слова прямо в Telegram. Безкоштовно. Алгоритм SM-2.">
+<meta property="og:title" content="Zubriq — Вивчай слова. Одне сповіщення за раз.">
+<meta property="og:description" content="Telegram-бот, що допоможе вивчити нові слова через розумні пуш-сповіщення. Безкоштовно під час раннього доступу.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="images/img-mm8ak1ah-nf616bdf.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Zubriq",
+  "description": "Telegram-бот для вивчення нових слів через розумні пуш-сповіщення з інтервальним повторенням",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Telegram (cross-platform)",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "UAH"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Як працює Zubriq?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Додай слова з перекладом у Telegram-бот, обери як часто отримувати сповіщення, і Zubriq надсилатиме тобі пуш-повідомлення зі словами. Натисни, щоб побачити переклад, а потім відміть слово як вивчене або повтори ще раз. Алгоритм SM-2 адаптується до твоєї пам'яті."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Які мови підтримуються?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Будь-які. Ти сам додаєш пари слів у будь-якій комбінації мов — англійська-українська, польська-німецька, японська-іспанська — як тобі потрібно."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Це справді безкоштовно?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Так. Zubriq повністю безкоштовний під час раннього доступу. Додавай необмежену кількість слів, вчись у своєму темпі — без карток, без прихованих лімітів."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Чим це відрізняється від Duolingo?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Zubriq — мінімалістичний і пасивний. Жодного тиску гейміфікації, жодних докорів за пропущені серії. Просто слова, що приходять у твоєму ритмі. Ти вчишся прямо у сповіщеннях Telegram — не потрібно відкривати окремий додаток."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Чи можна імпортувати свої списки слів?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Так. Надішли текстовий файл зі словами та перекладами боту в Telegram, і Zubriq імпортує їх автоматично. Також можеш експортувати свої дані будь-коли."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Де зберігаються мої дані?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Безпечно на наших серверах. Ти можеш експортувати або видалити свої дані будь-коли. Твої слова та прогрес — завжди твої."
+      }
+    }
+  ]
+}
+</script>
+
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-deep: #0a0f1c;
+  --bg-surface: rgba(26, 31, 46, 0.6);
+  --bg-surface-solid: #1a1f2e;
+  --accent-blue: #3b82f6;
+  --accent-indigo: #6366f1;
+  --accent-amber: #f59e0b;
+  --accent-green: #10b981;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  --border-subtle: rgba(148, 163, 184, 0.1);
+  --glass-bg: rgba(26, 31, 46, 0.5);
+  --glass-border: rgba(148, 163, 184, 0.08);
+  --glow-primary: rgba(59, 130, 246, 0.15);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+}
+
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 { font-family: 'Space Grotesk', 'Inter', sans-serif; line-height: 1.15; }
+a { color: inherit; text-decoration: none; }
+
+.container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+/* ===== NAVIGATION ===== */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 0; transition: all 0.35s ease;
+}
+.nav.scrolled {
+  background: rgba(10, 15, 28, 0.88);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.nav-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  max-width: 1120px; margin: 0 auto; padding: 18px 24px;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700; font-size: 1.2rem; color: var(--text-primary);
+}
+.nav-logo-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem;
+}
+.nav-links {
+  display: flex; align-items: center; gap: 32px; list-style: none;
+}
+.nav-links a {
+  font-size: 0.875rem; font-weight: 500; color: var(--text-secondary);
+  transition: color 0.2s ease;
+}
+.nav-links a:hover { color: var(--text-primary); }
+.nav-cta {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 22px; background: var(--accent-blue); color: #fff;
+  border-radius: 100px; font-size: 0.875rem; font-weight: 600;
+  transition: all 0.2s ease; border: none; cursor: pointer;
+  text-decoration: none;
+}
+.nav-cta:hover { background: #2563eb; transform: translateY(-1px); }
+
+.hamburger {
+  display: none; background: none; border: none; cursor: pointer;
+  width: 44px; height: 44px; align-items: center; justify-content: center;
+  flex-direction: column; gap: 5px;
+}
+.hamburger span {
+  display: block; width: 22px; height: 2px; background: var(--text-primary);
+  border-radius: 2px; transition: all 0.3s ease;
+}
+.hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.hamburger.active span:nth-child(2) { opacity: 0; }
+.hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+.mobile-menu {
+  display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(10, 15, 28, 0.96); backdrop-filter: blur(24px);
+  z-index: 99; flex-direction: column; align-items: center;
+  justify-content: center; gap: 32px; opacity: 0;
+  transition: opacity 0.3s ease; pointer-events: none;
+}
+.mobile-menu.active { opacity: 1; pointer-events: all; }
+.mobile-menu a {
+  font-size: 1.25rem; font-weight: 500; color: var(--text-secondary);
+  transition: color 0.2s ease;
+}
+.mobile-menu a:hover { color: var(--text-primary); }
+.mobile-menu .nav-cta {
+  padding: 14px 32px; font-size: 1rem; margin-top: 16px;
+}
+
+/* ===== HERO ===== */
+.hero {
+  min-height:auto;max-height:800px; display: flex; align-items: center;
+  padding: 120px 0 80px; position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; top: -30%; left: -15%;
+  width: 70%; height: 70%;
+  background: radial-gradient(ellipse, rgba(59, 130, 246, 0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero::after {
+  content: ''; position: absolute; bottom: -25%; right: -15%;
+  width: 55%; height: 55%;
+  background: radial-gradient(ellipse, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-inner {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; align-items: center; position: relative; z-index: 1;
+}
+.hero-content { max-width: 540px; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 16px; background: var(--glass-bg);
+  border: 1px solid var(--glass-border); border-radius: 100px;
+  font-size: 0.8rem; font-weight: 500; color: var(--text-secondary);
+  margin-bottom: 28px; letter-spacing: 0.04em;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.hero-badge-dot {
+  width: 7px; height: 7px; background: var(--accent-green);
+  border-radius: 50%; animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+.hero h1 {
+  font-size: clamp(2.5rem, 5vw, 3.75rem); font-weight: 800;
+  letter-spacing: -0.035em; margin-bottom: 20px; line-height: 1.1;
+}
+.hero h1 .gradient-text {
+  background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-indigo) 60%, #a78bfa 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-subtitle {
+  font-size: 1.1rem; color: var(--text-secondary); line-height: 1.7;
+  margin-bottom: 36px; max-width: 480px;
+}
+.hero-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 15px 30px; background: var(--accent-blue); color: #fff;
+  border-radius: 100px; font-size: 1rem; font-weight: 600;
+  border: none; cursor: pointer; transition: all 0.25s ease;
+  text-decoration: none; box-shadow: 0 0 32px rgba(59, 130, 246, 0.2);
+  font-family: 'Inter', sans-serif;
+}
+.btn-primary:hover {
+  background: #2563eb; transform: translateY(-2px);
+  box-shadow: 0 0 48px rgba(59, 130, 246, 0.35);
+}
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 15px 24px; background: transparent; color: var(--text-secondary);
+  border: 1px solid var(--border-subtle); border-radius: 100px;
+  font-size: 1rem; font-weight: 500; cursor: pointer;
+  transition: all 0.2s ease; text-decoration: none; font-family: 'Inter', sans-serif;
+}
+.btn-secondary:hover {
+  color: var(--text-primary);
+  border-color: rgba(148, 163, 184, 0.25);
+  background: rgba(148, 163, 184, 0.05);
+}
+.btn-secondary .bounce-arrow {
+  display: inline-block; animation: bounceArrow 2s ease-in-out infinite;
+}
+@keyframes bounceArrow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+.hero-micro-proof {
+  margin-top: 32px; font-size: 0.8125rem; color: var(--text-tertiary);
+  font-weight: 500; display: flex; align-items: center; gap: 6px;
+}
+
+/* Phone Mockup */
+.hero-visual { display: flex; justify-content: center; position: relative; }
+.phone-glow {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 320px; height: 500px; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(59, 130, 246, 0.1) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+.phone-mockup {
+  width: 272px; height: 550px; background: #0c0c0c; border-radius: 44px;
+  border: 2px solid rgba(148, 163, 184, 0.12); position: relative;
+  overflow: hidden; z-index: 1; animation: phoneFloat 6s ease-in-out infinite;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 80px rgba(59, 130, 246, 0.07), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+@keyframes phoneFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.phone-notch {
+  width: 100px; height: 26px; background: #0c0c0c;
+  border-radius: 0 0 18px 18px; margin: 0 auto; position: relative; z-index: 2;
+}
+.phone-screen {
+  padding: 14px 14px 10px; height: calc(100% - 26px);
+  display: flex; flex-direction: column;
+  background: linear-gradient(180deg, #0f172a 0%, #162032 100%);
+}
+.phone-status-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 2px 4px 14px; font-size: 0.68rem; color: var(--text-tertiary); font-weight: 600;
+}
+.phone-status-icons { display: flex; gap: 4px; align-items: center; }
+.phone-status-icons svg { width: 14px; height: 14px; }
+.phone-notifications-label {
+  font-size: 0.75rem; color: var(--text-tertiary); margin-bottom: 12px; font-weight: 500;
+}
+.phone-notification {
+  background: rgba(30, 41, 59, 0.85); border: 1px solid rgba(148, 163, 184, 0.08);
+  border-radius: 14px; padding: 12px; margin-bottom: 8px;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.phone-notif-header {
+  display: flex; align-items: center; gap: 7px; margin-bottom: 7px;
+}
+.phone-notif-app-icon {
+  width: 18px; height: 18px; background: var(--accent-blue);
+  border-radius: 5px; display: flex; align-items: center;
+  justify-content: center; font-size: 0.55rem; color: #fff; font-weight: 700;
+}
+.phone-notif-app-name { font-size: 0.65rem; color: var(--text-tertiary); font-weight: 600; }
+.phone-notif-time { font-size: 0.6rem; color: var(--text-tertiary); margin-left: auto; }
+.phone-notif-word {
+  font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem;
+  font-weight: 700; color: var(--text-primary); margin-bottom: 3px;
+}
+.phone-notif-hint { font-size: 0.7rem; color: var(--text-tertiary); }
+.phone-notif-translation {
+  font-size: 0.8rem; color: var(--accent-amber); font-weight: 500; margin-top: 5px;
+}
+.phone-notification-faded { opacity: 0.45; }
+.phone-home-indicator {
+  width: 100px; height: 4px; background: rgba(148, 163, 184, 0.18);
+  border-radius: 2px; margin: auto auto 6px;
+}
+
+/* ===== SECTIONS SHARED ===== */
+section { padding: 100px 0; }
+.section-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8125rem; font-weight: 600; color: var(--accent-blue);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;
+}
+.section-title {
+  font-size: clamp(1.9rem, 3.5vw, 2.65rem); font-weight: 700;
+  letter-spacing: -0.025em; margin-bottom: 16px;
+}
+.section-subtitle {
+  font-size: 1.05rem; color: var(--text-secondary);
+  max-width: 560px; line-height: 1.7;
+}
+.section-header { margin-bottom: 60px; }
+.section-header-center {
+  text-align: center; display: flex; flex-direction: column; align-items: center;
+}
+
+/* ===== HOW IT WORKS ===== */
+.how-it-works { position: relative; }
+.steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.step-card {
+  position: relative; padding: 36px 28px;
+  background: var(--glass-bg); border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+.step-card:hover {
+  border-color: rgba(59, 130, 246, 0.18);
+  transform: translateY(-4px);
+}
+.step-number {
+  display: flex; align-items: center; justify-content: center;
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+  border-radius: 12px; font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700; font-size: 1rem; margin-bottom: 22px; color: #fff;
+}
+.step-icon {
+  width: 48px; height: 48px; margin-bottom: 20px; color: var(--accent-blue);
+  display: flex; align-items: center; justify-content: center;
+}
+.step-card h3 {
+  font-size: 1.2rem; font-weight: 700; margin-bottom: 10px;
+}
+.step-card p {
+  font-size: 0.9375rem; color: var(--text-secondary); line-height: 1.7;
+}
+
+.steps-cta {
+  text-align: center; margin-top: 56px;
+}
+
+/* ===== NOTIFICATION DEMO ===== */
+.demo-section { position: relative; }
+.demo-section::before {
+  content: ''; position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%); width: 600px; height: 600px;
+  background: radial-gradient(ellipse, rgba(59, 130, 246, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.demo-container {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 32px; position: relative; z-index: 1;
+}
+.demo-card-wrapper { width: 100%; max-width: 420px; }
+.demo-card {
+  background: var(--glass-bg); border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  overflow: hidden; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  cursor: pointer; transition: transform 0.3s ease;
+  -webkit-user-select: none; user-select: none;
+}
+.demo-card:hover { transform: translateY(-2px); }
+.demo-notif-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 18px 22px; border-bottom: 1px solid var(--border-subtle);
+}
+.demo-notif-icon {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+  border-radius: 10px; display: flex; align-items: center;
+  justify-content: center; flex-shrink: 0; color: #fff; font-weight: 700; font-size: 0.85rem;
+}
+.demo-notif-meta { flex: 1; }
+.demo-notif-app { font-size: 0.8125rem; font-weight: 600; color: var(--text-primary); }
+.demo-notif-time { font-size: 0.75rem; color: var(--text-tertiary); }
+.demo-notif-body { padding: 24px 22px; }
+.demo-word {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2rem; font-weight: 700; margin-bottom: 4px;
+}
+.demo-phonetic {
+  font-size: 0.875rem; color: var(--text-tertiary); margin-bottom: 16px;
+}
+.demo-translation-area { min-height: 48px; display: flex; align-items: center; }
+.demo-tap-hint {
+  font-size: 0.875rem; color: var(--text-tertiary);
+  display: flex; align-items: center; gap: 6px; transition: opacity 0.3s ease;
+}
+.demo-translation {
+  font-size: 1.25rem; font-weight: 600; color: var(--accent-amber);
+  opacity: 0; transform: translateY(8px); transition: all 0.4s ease;
+  display: none;
+}
+.demo-translation.visible { opacity: 1; transform: translateY(0); display: block; }
+.demo-actions {
+  display: flex; gap: 12px; padding: 0 22px 22px;
+  opacity: 0; transform: translateY(8px);
+  transition: all 0.4s ease 0.15s; max-height: 0; overflow: hidden;
+  padding-bottom: 0;
+}
+.demo-actions.visible {
+  opacity: 1; transform: translateY(0); max-height: 80px; padding-bottom: 22px;
+}
+.demo-btn {
+  flex: 1; padding: 12px 16px; border-radius: var(--radius-md);
+  font-size: 0.875rem; font-weight: 600; border: none; cursor: pointer;
+  transition: transform 0.2s ease; display: flex; align-items: center;
+  justify-content: center; gap: 6px; font-family: 'Inter', sans-serif;
+}
+.demo-btn:hover { transform: scale(1.04); }
+.demo-btn-know {
+  background: rgba(16, 185, 129, 0.15); color: var(--accent-green);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+.demo-btn-hard {
+  background: rgba(245, 158, 11, 0.15); color: var(--accent-amber);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+.demo-states-indicator { display: flex; gap: 8px; align-items: center; }
+.demo-state-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--text-tertiary); transition: all 0.3s ease;
+}
+.demo-state-dot.active {
+  background: var(--accent-blue); box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+}
+.demo-instruction {
+  font-size: 0.875rem; color: var(--text-tertiary); text-align: center;
+}
+
+/* ===== FEATURES BENTO ===== */
+.features-section { position: relative; }
+.bento-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto auto; gap: 20px;
+}
+.bento-card {
+  background: var(--glass-bg); border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl); padding: 32px 28px;
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  transition: border-color 0.3s ease, transform 0.3s ease;
+  position: relative; overflow: hidden;
+}
+.bento-card:hover {
+  border-color: rgba(59, 130, 246, 0.15); transform: translateY(-2px);
+}
+.bento-card-lg { grid-column: span 2; }
+.bento-icon {
+  width: 44px; height: 44px; background: rgba(59, 130, 246, 0.1);
+  border-radius: 12px; display: flex; align-items: center;
+  justify-content: center; margin-bottom: 20px; color: var(--accent-blue);
+}
+.bento-card:nth-child(2) .bento-icon { background: rgba(245, 158, 11, 0.1); color: var(--accent-amber); }
+.bento-card:nth-child(3) .bento-icon { background: rgba(99, 102, 241, 0.1); color: var(--accent-indigo); }
+.bento-card:nth-child(4) .bento-icon { background: rgba(16, 185, 129, 0.1); color: var(--accent-green); }
+.bento-card:nth-child(5) .bento-icon { background: rgba(245, 158, 11, 0.1); color: var(--accent-amber); }
+.bento-card:nth-child(6) .bento-icon { background: rgba(99, 102, 241, 0.1); color: var(--accent-indigo); }
+.bento-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+.bento-card p { font-size: 0.9375rem; color: var(--text-secondary); line-height: 1.65; }
+.bento-tag {
+  display: inline-flex; padding: 4px 10px;
+  background: rgba(99, 102, 241, 0.1); color: var(--accent-indigo);
+  border-radius: 100px; font-size: 0.75rem; font-weight: 600; margin-top: 12px;
+}
+
+/* ===== WHO IS IT FOR ===== */
+.audience-section { position: relative; background: rgba(15, 23, 42, 0.5); }
+.audience-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.audience-card {
+  background: var(--glass-bg); border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl); padding: 28px 24px;
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  transition: border-color 0.3s ease, transform 0.3s ease; text-align: center;
+}
+.audience-card:hover {
+  border-color: rgba(59, 130, 246, 0.15); transform: translateY(-3px);
+}
+.audience-emoji {
+  font-size: 2.5rem; margin-bottom: 16px; display: block;
+  filter: grayscale(0);
+}
+.audience-card p {
+  font-size: 0.9375rem; color: var(--text-secondary); line-height: 1.6;
+}
+
+/* ===== PRICING ===== */
+.pricing-section { position: relative; }
+.pricing-card {
+  max-width: 580px; margin: 0 auto; text-align: center;
+  background: var(--glass-bg); border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl); padding: 56px 48px;
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  position: relative; overflow: hidden;
+}
+.pricing-card::before {
+  content: ''; position: absolute; top: -1px; left: 20%; right: 20%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-blue), var(--accent-indigo), transparent);
+}
+.pricing-amount {
+  font-family: 'Space Grotesk', sans-serif; font-size: clamp(3rem, 6vw, 4.5rem);
+  font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.pricing-period {
+  font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 16px;
+}
+.pricing-desc {
+  font-size: 1rem; color: var(--text-secondary); line-height: 1.7;
+  margin-bottom: 32px; max-width: 420px; margin-left: auto; margin-right: auto;
+}
+.pricing-features {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
+  margin-bottom: 36px;
+}
+.pricing-feature {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.12); border-radius: 100px;
+  font-size: 0.8125rem; font-weight: 500; color: var(--accent-green);
+}
+.pricing-coffee {
+  margin-top: 24px; font-size: 0.875rem; color: var(--text-tertiary);
+}
+.pricing-coffee a {
+  color: var(--accent-amber); font-weight: 500;
+  border-bottom: 1px solid rgba(245, 158, 11, 0.3);
+  transition: border-color 0.2s ease;
+}
+.pricing-coffee a:hover { border-color: var(--accent-amber); }
+
+/* ===== FAQ ===== */
+.faq-section { position: relative; }
+.faq-list {
+  max-width: 720px; margin: 0 auto;
+}
+.faq-item {
+  border-bottom: 1px solid var(--border-subtle);
+}
+.faq-question {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 22px 0; background: none; border: none;
+  cursor: pointer; color: var(--text-primary); font-family: 'Inter', sans-serif;
+  font-size: 1.05rem; font-weight: 600; text-align: left;
+  transition: color 0.2s ease; gap: 16px;
+}
+.faq-question:hover { color: var(--accent-blue); }
+.faq-chevron {
+  width: 20px; height: 20px; flex-shrink: 0;
+  transition: transform 0.3s ease; color: var(--text-tertiary);
+}
+.faq-item.active .faq-chevron { transform: rotate(180deg); }
+.faq-answer {
+  max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.35s ease;
+}
+.faq-answer-inner {
+  padding: 0 0 22px; font-size: 0.9375rem;
+  color: var(--text-secondary); line-height: 1.7;
+}
+
+/* ===== FINAL CTA ===== */
+.final-cta-section {
+  padding: 120px 0; position: relative; text-align: center;
+  background: linear-gradient(180deg, var(--bg-deep) 0%, rgba(15, 23, 42, 0.8) 50%, var(--bg-deep) 100%);
+}
+.final-cta-section::before {
+  content: ''; position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%); width: 700px; height: 400px;
+  background: radial-gradient(ellipse, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.final-cta-content { position: relative; z-index: 1; }
+.final-cta-content h2 {
+  font-size: clamp(2rem, 4vw, 3rem); font-weight: 800;
+  letter-spacing: -0.03em; margin-bottom: 16px;
+}
+.final-cta-content p {
+  font-size: 1.05rem; color: var(--text-secondary);
+  margin-bottom: 36px; max-width: 460px; margin-left: auto; margin-right: auto;
+  line-height: 1.7;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  padding: 48px 0 32px; border-top: 1px solid var(--border-subtle);
+}
+.footer-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 24px;
+}
+.footer-brand {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+  font-size: 1.1rem; color: var(--text-primary);
+}
+.footer-brand-icon {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; color: #fff;
+}
+.footer-links {
+  display: flex; gap: 24px; flex-wrap: wrap;
+}
+.footer-links a {
+  font-size: 0.875rem; color: var(--text-tertiary); font-weight: 500;
+  transition: color 0.2s ease;
+}
+.footer-links a:hover { color: var(--text-primary); }
+.footer-bottom {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 32px; padding-top: 24px;
+  border-top: 1px solid var(--border-subtle); flex-wrap: wrap; gap: 16px;
+}
+.footer-made {
+  font-size: 0.8125rem; color: var(--text-tertiary);
+}
+.footer-copyright {
+  font-size: 0.8125rem; color: var(--text-tertiary);
+}
+
+/* ===== SCROLL REVEAL ===== */
+.reveal {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.revealed { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 48px; text-align: center; }
+  .hero-content { max-width: 600px; margin: 0 auto; }
+  .hero-subtitle { max-width: 520px; margin-left: auto; margin-right: auto; margin-bottom: 36px; }
+  .hero-actions { justify-content: center; }
+  .hero-micro-proof { justify-content: center; }
+  .phone-mockup { width: 240px; height: 480px; border-radius: 36px; }
+  .phone-notch { width: 90px; height: 24px; }
+  .bento-grid { grid-template-columns: repeat(2, 1fr); }
+  .bento-card-lg { grid-column: span 2; }
+  .audience-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  section { padding: 72px 0; }
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  .mobile-menu { display: flex; }
+
+  .hero { min-height: auto; padding: 100px 0 60px; }
+  .hero-inner { gap: 40px; }
+  .hero-badge { font-size: 0.75rem; }
+  .hero-actions { flex-direction: column; width: 100%; }
+  .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+  .phone-mockup { width: 220px; height: 440px; border-radius: 32px; }
+
+  .steps-grid { grid-template-columns: 1fr; gap: 20px; }
+  .bento-grid { grid-template-columns: 1fr; }
+  .bento-card-lg { grid-column: span 1; }
+  .audience-grid { grid-template-columns: 1fr; }
+  .section-header { margin-bottom: 40px; }
+  .pricing-card { padding: 40px 28px; }
+  .footer-inner { flex-direction: column; align-items: flex-start; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 0 16px; }
+  .phone-mockup { width: 200px; height: 400px; border-radius: 28px; }
+  .phone-notch { width: 80px; height: 22px; border-radius: 0 0 14px 14px; }
+  .phone-notification { padding: 10px; }
+  .phone-notif-word { font-size: 1rem; }
+}
+
+/* ===== BISON WATERMARK ===== */
+.bison-watermark {
+  position: fixed; bottom: -60px; right: -60px;
+  width: 300px; height: 300px; opacity: 0.02;
+  pointer-events: none; z-index: 0;
+}
+</style>
+</head>
+<body>
+
+<!-- Bison Watermark -->
+<div class="bison-watermark" aria-hidden="true">
+  <img src="images/img-mm8ak36x-6au4irkk.jpg" alt="" width="300" height="300" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
+</div>
+
+<!-- Navigation -->
+<nav class="nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo" aria-label="Zubriq — Home">
+      <span class="nav-logo-icon" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </span>
+      Zubriq
+    </a>
+    <ul class="nav-links">
+      <li><a href="#how-it-works">Як це працює</a></li>
+      <li><a href="#features">Можливості</a></li>
+      <li><a href="#pricing">Ціна</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <a href="https://t.me/zubriq_bot" class="nav-cta" target="_blank" rel="noopener">
+      Відкрити в Telegram
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+    </a>
+    <button class="hamburger" aria-label="Відкрити меню" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" role="dialog" aria-label="Мобільна навігація">
+  <a href="#how-it-works" class="mobile-menu-link">Як це працює</a>
+  <a href="#demo" class="mobile-menu-link">Демо</a>
+  <a href="#features" class="mobile-menu-link">Можливості</a>
+  <a href="#pricing" class="mobile-menu-link">Ціна</a>
+  <a href="#faq" class="mobile-menu-link">FAQ</a>
+  <a href="https://t.me/zubriq_bot" class="nav-cta" target="_blank" rel="noopener">
+    Відкрити в Telegram
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+  </a>
+</div>
+
+<main>
+<!-- ===== HERO ===== -->
+<section class="hero" aria-label="Hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-badge reveal">
+          <span class="hero-badge-dot" aria-hidden="true"></span>
+          Telegram-бот для вивчення мов
+        </div>
+        <h1 class="reveal reveal-delay-1">
+          Вивчай слова.<br><span class="gradient-text">Одне сповіщення за раз.</span>
+        </h1>
+        <p class="hero-subtitle reveal reveal-delay-2">
+          Zubriq надсилає тобі розумні Telegram-сповіщення зі словами для запам'ятовування. Додай слова, обери темп &mdash; і твій Telegram стане мовним тренером.
+        </p>
+        <div class="hero-actions reveal reveal-delay-3">
+          <a href="https://t.me/zubriq_bot" class="btn-primary" target="_blank" rel="noopener">
+            Відкрити бот в Telegram
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#how-it-works" class="btn-secondary">
+            Як це працює <span class="bounce-arrow" aria-hidden="true">&#8595;</span>
+          </a>
+        </div>
+        <p class="hero-micro-proof reveal reveal-delay-4">
+          Безкоштовно &middot; Без реєстрації &middot; Просто відкрий Telegram
+        </p>
+      </div>
+      <div class="hero-visual reveal reveal-delay-2">
+        <div class="phone-glow" aria-hidden="true"></div>
+        <div class="phone-mockup" role="img" aria-label="Телефон зі сповіщенням Zubriq у Telegram зі словом для вивчення">
+          <div class="phone-notch" aria-hidden="true"></div>
+          <div class="phone-screen">
+            <div class="phone-status-bar" aria-hidden="true">
+              <span>9:41</span>
+              <div class="phone-status-icons">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+              </div>
+            </div>
+            <div class="phone-notifications-label">Сповіщення</div>
+            <div class="phone-notification">
+              <div class="phone-notif-header">
+                <div class="phone-notif-app-icon" aria-hidden="true">Z</div>
+                <span class="phone-notif-app-name">Zubriq</span>
+                <span class="phone-notif-time">зараз</span>
+              </div>
+              <div class="phone-notif-word">ephemeral</div>
+              <div class="phone-notif-hint">прикметник &middot; тимчасовий</div>
+              <div class="phone-notif-translation">натисни, щоб побачити переклад</div>
+            </div>
+            <div class="phone-notification phone-notification-faded">
+              <div class="phone-notif-header">
+                <div class="phone-notif-app-icon" aria-hidden="true">Z</div>
+                <span class="phone-notif-app-name">Zubriq</span>
+                <span class="phone-notif-time">2 хв тому</span>
+              </div>
+              <div class="phone-notif-word">resilient</div>
+              <div class="phone-notif-hint">прикметник &middot; стійкий</div>
+            </div>
+            <div class="phone-home-indicator" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="how-it-works" id="how-it-works" aria-label="Як Zubriq допомагає вивчати слова">
+  <div class="container">
+    <div class="section-header section-header-center">
+      <span class="section-label reveal">Як це працює</span>
+      <h2 class="section-title reveal reveal-delay-1">Почни вчити слова за одну хвилину</h2>
+      <p class="section-subtitle reveal reveal-delay-2">Три простих кроки. Нічого встановлювати, ніде реєструватись. Тільки ти, твої слова і Telegram.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card reveal reveal-delay-1">
+        <div class="step-number" aria-hidden="true">1</div>
+        <div class="step-icon" aria-hidden="true">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="8" y="8" width="32" height="32" rx="4"/>
+            <line x1="24" y1="16" x2="24" y2="32"/>
+            <line x1="16" y1="24" x2="32" y2="24"/>
+          </svg>
+        </div>
+        <h3>Додай слова</h3>
+        <p>Додай будь-яке слово або фразу з перекладом прямо в Telegram-бот. Можеш вводити по одному або імпортувати список із файлу.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-2">
+        <div class="step-number" aria-hidden="true">2</div>
+        <div class="step-icon" aria-hidden="true">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="24" cy="24" r="16"/>
+            <polyline points="24,14 24,24 32,28"/>
+          </svg>
+        </div>
+        <h3>Обери темп</h3>
+        <p>Обери як часто отримувати сповіщення: кожні 5 хвилин, кожні 30 хвилин або рандомно протягом дня.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-3">
+        <div class="step-number" aria-hidden="true">3</div>
+        <div class="step-icon" aria-hidden="true">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M28 8a4 4 0 00-8 0v4h8V8z"/>
+            <rect x="12" y="12" width="24" height="28" rx="3"/>
+            <polyline points="18,26 22,30 30,22"/>
+          </svg>
+        </div>
+        <h3>Вчи та запам'ятовуй</h3>
+        <p>Отримуй Telegram-сповіщення зі словами. Натисни, щоб побачити переклад. Відміть як вивчене або повтори ще раз. Розумний алгоритм адаптується до твоєї пам'яті.</p>
+      </div>
+    </div>
+    <div class="steps-cta reveal">
+      <a href="https://t.me/zubriq_bot" class="btn-primary" target="_blank" rel="noopener">
+        Почати вивчення
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== NOTIFICATION DEMO ===== -->
+<section class="demo-section" id="demo" aria-label="Подивись, як працюють сповіщення зі словами">
+  <div class="container">
+    <div class="section-header section-header-center">
+      <span class="section-label reveal">Спробуй наживо</span>
+      <h2 class="section-title reveal reveal-delay-1">Як працюють сповіщення зі словами</h2>
+      <p class="section-subtitle reveal reveal-delay-2">Вивчення відбувається прямо у сповіщеннях Telegram. Не потрібно нічого відкривати. Натисни, оціни &mdash; і далі.</p>
+    </div>
+    <div class="demo-container">
+      <div class="demo-card-wrapper reveal reveal-delay-1">
+        <div class="demo-card" id="demoCard" role="button" tabindex="0" aria-label="Інтерактивне демо сповіщення. Натисни, щоб побачити як працює.">
+          <div class="demo-notif-bar">
+            <div class="demo-notif-icon" aria-hidden="true">Z</div>
+            <div class="demo-notif-meta">
+              <div class="demo-notif-app">Zubriq</div>
+              <div class="demo-notif-time">Щойно</div>
+            </div>
+          </div>
+          <div class="demo-notif-body">
+            <div class="demo-word" id="demoWord">ephemeral</div>
+            <div class="demo-phonetic" id="demoPhonetic">/ɪˈfem.ər.əl/ &middot; прикметник</div>
+            <div class="demo-translation-area">
+              <div class="demo-tap-hint" id="demoHint">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5"/></svg>
+                Натисни, щоб побачити переклад
+              </div>
+              <div class="demo-translation" id="demoTranslation">ефемерний, тимчасовий</div>
+            </div>
+          </div>
+          <div class="demo-actions" id="demoActions">
+            <button class="demo-btn demo-btn-know" id="demoBtnKnow" tabindex="-1">Знаю</button>
+            <button class="demo-btn demo-btn-hard" id="demoBtnHard" tabindex="-1">Складно</button>
+          </div>
+        </div>
+      </div>
+      <div class="demo-states-indicator reveal reveal-delay-2">
+        <div class="demo-state-dot active" id="dot0"></div>
+        <div class="demo-state-dot" id="dot1"></div>
+        <div class="demo-state-dot" id="dot2"></div>
+      </div>
+      <p class="demo-instruction reveal reveal-delay-3">Натисни на картку, щоб побачити весь процес</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURES ===== -->
+<section class="features-section" id="features" aria-label="Можливості для справжнього навчання">
+  <div class="container">
+    <div class="section-header section-header-center">
+      <span class="section-label reveal">Можливості</span>
+      <h2 class="section-title reveal reveal-delay-1">Чому обирають Zubriq</h2>
+      <p class="section-subtitle reveal reveal-delay-2">Все, що потрібно для поповнення словникового запасу. Нічого зайвого.</p>
+    </div>
+    <div class="bento-grid">
+      <div class="bento-card bento-card-lg reveal reveal-delay-1">
+        <div class="bento-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <h3>Інтервальне повторення (алгоритм SM-2)</h3>
+        <p>Складні слова з'являються частіше. Вивчені &mdash; рідше. Науково обґрунтоване запам'ятовування, що адаптується до того, як працює саме твоя пам'ять.</p>
+      </div>
+      <div class="bento-card reveal reveal-delay-2">
+        <div class="bento-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        </div>
+        <h3>Будь-яка пара мов</h3>
+        <p>Англійська, польська, німецька, японська &mdash; будь-яка мова. Ти додаєш слова, Zubriq робить решту.</p>
+      </div>
+      <div class="bento-card reveal reveal-delay-3">
+        <div class="bento-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        </div>
+        <h3>Сповіщення, що навчають</h3>
+        <p>Бачиш слово прямо у сповіщеннях Telegram. Не потрібно відкривати окремий додаток. Вчишся пасивно, поки живеш своїм життям.</p>
+      </div>
+      <div class="bento-card reveal reveal-delay-1">
+        <div class="bento-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <h3>Відстежуй прогрес</h3>
+        <p>Дивись скільки слів вивчено, які потребують повторення та загальну статистику навчання.</p>
+      </div>
+      <div class="bento-card reveal reveal-delay-2">
+        <div class="bento-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <h3>Імпорт та експорт</h3>
+        <p>Надішли файл зі словами боту &mdash; він імпортує їх автоматично. Експортуй будь-коли. Твої дані &mdash; завжди твої.</p>
+      </div>
+      <div class="bento-card reveal reveal-delay-3">
+        <div class="bento-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <h3>Кілька методів навчання</h3>
+        <p>Зараз &mdash; флеш-картки у сповіщеннях. Скоро &mdash; квізи, зворотні картки, вгадування за контекстом.</p>
+        <span class="bento-tag">Скоро</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== WHO IS IT FOR ===== -->
+<section class="audience-section" id="audience" aria-label="Для кого Zubriq">
+  <div class="container">
+    <div class="section-header section-header-center">
+      <span class="section-label reveal">Для кого</span>
+      <h2 class="section-title reveal reveal-delay-1">Для тих, хто справді хоче вивчити нові слова</h2>
+      <p class="section-subtitle reveal reveal-delay-2">Жодного тиску гейміфікації. Жодних докорів. Просто слова у Telegram, що приходять у твоєму ритмі.</p>
+    </div>
+    <div class="audience-grid">
+      <div class="audience-card reveal reveal-delay-1">
+        <span class="audience-emoji" aria-hidden="true">&#127482;&#127462;</span>
+        <p>Українці, що вивчають англійську, польську чи німецьку</p>
+      </div>
+      <div class="audience-card reveal reveal-delay-2">
+        <span class="audience-emoji" aria-hidden="true">&#127758;</span>
+        <p>Ті, хто переїхав і адаптується до нової мови</p>
+      </div>
+      <div class="audience-card reveal reveal-delay-3">
+        <span class="audience-emoji" aria-hidden="true">&#128218;</span>
+        <p>Студенти, що готуються до мовних іспитів</p>
+      </div>
+      <div class="audience-card reveal reveal-delay-4">
+        <span class="audience-emoji" aria-hidden="true">&#129504;</span>
+        <p>Всі, хто хоче поповнити словниковий запас без зайвих зусиль</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PRICING ===== -->
+<section class="pricing-section" id="pricing" aria-label="Безкоштовний Telegram-бот для словникового запасу">
+  <div class="container">
+    <div class="section-header section-header-center">
+      <span class="section-label reveal">Ціна</span>
+      <h2 class="section-title reveal reveal-delay-1">Безкоштовно. Серйозно.</h2>
+    </div>
+    <div class="pricing-card reveal reveal-delay-2">
+      <div class="pricing-amount">$0</div>
+      <div class="pricing-period">Безкоштовно під час раннього доступу</div>
+      <p class="pricing-desc">Zubriq безкоштовний під час раннього доступу. Додавай необмежену кількість слів, вчись у своєму темпі. Без прихованих платежів, без преміум-тарифів &mdash; тільки навчання.</p>
+      <div class="pricing-features">
+        <span class="pricing-feature">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Необмежено слів
+        </span>
+        <span class="pricing-feature">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Будь-яка пара мов
+        </span>
+        <span class="pricing-feature">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Розумні сповіщення
+        </span>
+        <span class="pricing-feature">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Імпорт та експорт
+        </span>
+        <span class="pricing-feature">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Алгоритм SM-2
+        </span>
+      </div>
+      <a href="https://t.me/zubriq_bot" class="btn-primary" target="_blank" rel="noopener">
+        Почати безкоштовно
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+      </a>
+      <p class="pricing-coffee">Або <a href="#" aria-label="Підтримати проєкт Zubriq">пригости зубра кавою</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section class="faq-section" id="faq" aria-label="Часті запитання про Zubriq">
+  <div class="container">
+    <div class="section-header section-header-center">
+      <span class="section-label reveal">FAQ</span>
+      <h2 class="section-title reveal reveal-delay-1">Часті запитання</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item reveal reveal-delay-1">
+        <button class="faq-question" aria-expanded="false">
+          Як працює Zubriq?
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" role="region">
+          <div class="faq-answer-inner">Додай слова з перекладом у Telegram-бот, обери як часто хочеш отримувати нагадування &mdash; і Zubriq надсилатиме тобі сповіщення зі словами. Натисни, щоб побачити переклад, потім відміть слово як вивчене або повтори знову. Алгоритм інтервального повторення SM-2 адаптується до твоєї пам'яті.</div>
+        </div>
+      </div>
+      <div class="faq-item reveal reveal-delay-2">
+        <button class="faq-question" aria-expanded="false">
+          Які мови підтримуються?
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" role="region">
+          <div class="faq-answer-inner">Будь-які. Ти сам додаєш пари слів у будь-якій комбінації мов &mdash; англійська-українська, польська-німецька, японська-іспанська &mdash; як тобі потрібно. Zubriq не обмежує тебе певним списком мов.</div>
+        </div>
+      </div>
+      <div class="faq-item reveal reveal-delay-3">
+        <button class="faq-question" aria-expanded="false">
+          Це справді безкоштовно?
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" role="region">
+          <div class="faq-answer-inner">Так. Zubriq повністю безкоштовний під час раннього доступу. Ми хочемо створити найкращий інструмент для вивчення мов і потребуємо зворотного зв'язку. Додавай необмежену кількість слів, вчись у своєму темпі &mdash; без карток, без прихованих лімітів.</div>
+        </div>
+      </div>
+      <div class="faq-item reveal reveal-delay-4">
+        <button class="faq-question" aria-expanded="false">
+          Чим це відрізняється від Duolingo?
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" role="region">
+          <div class="faq-answer-inner">Zubriq &mdash; мінімалістичний і пасивний. Жодного тиску гейміфікації, жодних докорів за пропущені серії. Просто слова, що приходять у Telegram у твоєму ритмі. Ти вчишся прямо у сповіщеннях &mdash; не потрібно відкривати окремий додаток. Вважай це персональним репетитором, що живе у твоєму Telegram.</div>
+        </div>
+      </div>
+      <div class="faq-item reveal reveal-delay-5">
+        <button class="faq-question" aria-expanded="false">
+          Чи можна імпортувати свої списки слів?
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" role="region">
+          <div class="faq-answer-inner">Так. Надішли текстовий файл зі словами та перекладами боту в Telegram, і Zubriq імпортує їх автоматично. Також можеш експортувати свої дані будь-коли &mdash; твої слова завжди залишаються твоїми.</div>
+        </div>
+      </div>
+      <div class="faq-item reveal reveal-delay-5">
+        <button class="faq-question" aria-expanded="false">
+          Де зберігаються мої дані?
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" role="region">
+          <div class="faq-answer-inner">Безпечно на наших серверах. Ти можеш експортувати або видалити свої дані будь-коли. Ми вважаємо, що твій словник &mdash; це твоя власність, і ставимось до нього відповідно.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FINAL CTA ===== -->
+<section class="final-cta-section" aria-label="Почни вивчати слова з Zubriq">
+  <div class="container">
+    <div class="final-cta-content">
+      <h2 class="reveal">Готовий вивчати слова<br>без зайвих зусиль?</h2>
+      <p class="reveal reveal-delay-1">Відкрий Telegram. Запусти бота. Додай перше слово. Все &mdash; тепер твої сповіщення стали класною кімнатою.</p>
+      <div class="reveal reveal-delay-2">
+        <a href="https://t.me/zubriq_bot" class="btn-primary" target="_blank" rel="noopener" style="font-size: 1.1rem; padding: 17px 36px;">
+          Почати безкоштовно в Telegram
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-brand-icon" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </span>
+        Zubriq
+      </div>
+      <div class="footer-links">
+        <a href="https://t.me/zubriq_bot" target="_blank" rel="noopener">Telegram-бот</a>
+        <a href="#" aria-label="Zubriq на GitHub">GitHub</a>
+        <a href="#" aria-label="Зв'язатись з командою Zubriq">Контакти</a>
+        <a href="#" aria-label="Політика конфіденційності">Конфіденційність</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-made">Зроблено з &#129452; в Україні</span>
+      <span class="footer-copyright">&copy; 2025 Zubriq</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ===== Navigation scroll effect =====
+const nav = document.querySelector('.nav');
+const heroSection = document.querySelector('.hero');
+
+function handleNavScroll() {
+  if (window.scrollY > 60) {
+    nav.classList.add('scrolled');
+  } else {
+    nav.classList.remove('scrolled');
+  }
+}
+window.addEventListener('scroll', handleNavScroll, { passive: true });
+handleNavScroll();
+
+// ===== Hamburger menu =====
+const hamburger = document.querySelector('.hamburger');
+const mobileMenu = document.querySelector('.mobile-menu');
+
+hamburger.addEventListener('click', function() {
+  this.classList.toggle('active');
+  mobileMenu.classList.toggle('active');
+  this.setAttribute('aria-expanded', this.classList.contains('active'));
+  document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+});
+
+document.querySelectorAll('.mobile-menu a').forEach(link => {
+  link.addEventListener('click', () => {
+    hamburger.classList.remove('active');
+    mobileMenu.classList.remove('active');
+    hamburger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  });
+});
+
+// ===== Scroll Reveal (Intersection Observer) =====
+const revealElements = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('revealed');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, {
+  threshold: 0.15,
+  rootMargin: '0px 0px -40px 0px'
+});
+
+revealElements.forEach(el => revealObserver.observe(el));
+
+// ===== Notification Demo (3-state interactive) =====
+const demoCard = document.getElementById('demoCard');
+const demoHint = document.getElementById('demoHint');
+const demoTranslation = document.getElementById('demoTranslation');
+const demoActions = document.getElementById('demoActions');
+const demoBtnKnow = document.getElementById('demoBtnKnow');
+const demoBtnHard = document.getElementById('demoBtnHard');
+const dots = [document.getElementById('dot0'), document.getElementById('dot1'), document.getElementById('dot2')];
+
+let demoState = 0;
+let autoTimer = null;
+let resumeTimer = null;
+
+function setDemoState(state) {
+  demoState = state;
+  dots.forEach((d, i) => d.classList.toggle('active', i === state));
+
+  if (state === 0) {
+    demoHint.style.display = 'flex';
+    demoTranslation.classList.remove('visible');
+    demoActions.classList.remove('visible');
+  } else if (state === 1) {
+    demoHint.style.display = 'none';
+    demoTranslation.classList.add('visible');
+    demoActions.classList.remove('visible');
+  } else if (state === 2) {
+    demoHint.style.display = 'none';
+    demoTranslation.classList.add('visible');
+    demoActions.classList.add('visible');
+  }
+}
+
+function advanceDemo() {
+  setDemoState((demoState + 1) % 3);
+}
+
+function startAutoTimer() {
+  clearInterval(autoTimer);
+  autoTimer = setInterval(advanceDemo, 3000);
+}
+
+function pauseAndResume() {
+  clearInterval(autoTimer);
+  clearTimeout(resumeTimer);
+  resumeTimer = setTimeout(startAutoTimer, 8000);
+}
+
+demoCard.addEventListener('click', function(e) {
+  if (e.target === demoBtnKnow || e.target === demoBtnHard) return;
+  advanceDemo();
+  pauseAndResume();
+});
+
+demoCard.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    advanceDemo();
+    pauseAndResume();
+  }
+});
+
+demoBtnKnow.addEventListener('click', function(e) {
+  e.stopPropagation();
+  setDemoState(0);
+  pauseAndResume();
+});
+
+demoBtnHard.addEventListener('click', function(e) {
+  e.stopPropagation();
+  setDemoState(0);
+  pauseAndResume();
+});
+
+setDemoState(0);
+startAutoTimer();
+
+// ===== FAQ Accordion =====
+document.querySelectorAll('.faq-question').forEach(button => {
+  button.addEventListener('click', function() {
+    const item = this.parentElement;
+    const answer = item.querySelector('.faq-answer');
+    const isActive = item.classList.contains('active');
+
+    document.querySelectorAll('.faq-item.active').forEach(activeItem => {
+      activeItem.classList.remove('active');
+      activeItem.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+      activeItem.querySelector('.faq-answer').style.maxHeight = '0';
+    });
+
+    if (!isActive) {
+      item.classList.add('active');
+      this.setAttribute('aria-expanded', 'true');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+    }
+  });
+});
+
+// ===== Smooth scroll for anchor links =====
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      const navHeight = nav.offsetHeight;
+      const targetPosition = target.getBoundingClientRect().top + window.scrollY - navHeight - 20;
+      window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+    }
+  });
+});
+</script>
+</body>
+</html>

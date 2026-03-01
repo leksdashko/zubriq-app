@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int       @id @default(autoincrement())
+  telegramId     BigInt    @unique @map("telegram_id")
+  firstName      String?   @map("first_name")
+  languageCode   String    @default("uk") @map("language_code")
+  targetLanguage String    @default("en") @map("target_language")
+  timezone       String    @default("Europe/Kyiv")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  words    Word[]
+  sessions LearningSession[]
+
+  @@map("users")
+}
+
+model Word {
+  id          Int       @id @default(autoincrement())
+  userId      Int       @map("user_id")
+  original    String
+  translation String
+  context     String?
+  tags        String[]  @default([])
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  progress WordProgress[]
+
+  @@index([userId])
+  @@map("words")
+}
+
+model WordProgress {
+  id           Int       @id @default(autoincrement())
+  wordId       Int       @map("word_id")
+  methodType   String    @map("method_type")
+  easeFactor   Float     @default(2.5) @map("ease_factor")
+  interval     Int       @default(0)
+  repetitions  Int       @default(0)
+  nextReviewAt DateTime  @default(now()) @map("next_review_at")
+  isLearned    Boolean   @default(false) @map("is_learned")
+  lastReviewAt DateTime? @map("last_review_at")
+
+  word Word @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@unique([wordId, methodType])
+  @@index([nextReviewAt])
+  @@map("word_progress")
+}
+
+model LearningSession {
+  id         Int       @id @default(autoincrement())
+  userId     Int       @map("user_id")
+  methodType String    @map("method_type")
+  frequency  String
+  isActive   Boolean   @default(false) @map("is_active")
+  startedAt  DateTime? @map("started_at")
+  stoppedAt  DateTime? @map("stopped_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isActive])
+  @@map("learning_sessions")
+}
