@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_DB: zubriq
       POSTGRES_USER: zubriq
-      POSTGRES_PASSWORD: zubriq_secret
+      POSTGRES_PASSWORD: JQLLDxGk5L4n3PzPprwV0r5fxZbN9oHC
     ports:
       - "5433:5432"
     volumes:
