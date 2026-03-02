@@ -34,7 +34,11 @@ export async function authMiddleware(
         data: {
           telegramId,
           firstName: ctx.from.first_name || null,
-          languageCode: ctx.from.language_code?.startsWith("uk") ? "uk" : "en",
+          languageCode: ctx.from.language_code?.startsWith("uk")
+            ? "uk"
+            : ctx.from.language_code?.startsWith("ru")
+              ? "ru"
+              : "en",
         },
       });
       logger.info({ telegramId: Number(telegramId) }, "New user registered");

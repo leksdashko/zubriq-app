@@ -3,7 +3,9 @@ import { InlineKeyboard } from "grammy";
 export function languageKeyboard(): InlineKeyboard {
   return new InlineKeyboard()
     .text("🇺🇦 Українська", "s:lang:uk")
-    .text("🇬🇧 English", "s:lang:en");
+    .text("🇬🇧 English", "s:lang:en")
+    .row()
+    .text("Русский", "s:lang:ru");
 }
 
 export function targetLanguageKeyboard(): InlineKeyboard {
@@ -15,7 +17,9 @@ export function targetLanguageKeyboard(): InlineKeyboard {
     .text("🇫🇷 Français", "s:target:fr")
     .row()
     .text("🇪🇸 Español", "s:target:es")
-    .text("🇵🇱 Polski", "s:target:pl");
+    .text("🇵🇱 Polski", "s:target:pl")
+    .row()
+    .text("Русский", "s:target:ru");
 }
 
 export function flashcardKeyboard(wordId: number): InlineKeyboard {

@@ -76,3 +76,4 @@ errors-no_active_session = You don't have an active session. Press /learn
 
 languages-uk = 🇺🇦 Українська
 languages-en = 🇬🇧 English
+languages-ru = Русский

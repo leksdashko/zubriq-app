@@ -16,12 +16,13 @@ export function createI18n(): I18n<BotContext> {
       // First check DB user languageCode stored in ctx (set by auth middleware)
       const dbLocale = (ctx as BotContext & { dbUser?: { languageCode: string } }).dbUser
         ?.languageCode;
-      if (dbLocale && (dbLocale === "uk" || dbLocale === "en")) {
+      if (dbLocale && (dbLocale === "uk" || dbLocale === "en" || dbLocale === "ru")) {
         return dbLocale;
       }
       // Fallback to Telegram language_code
       const tgLang = ctx.from?.language_code;
       if (tgLang?.startsWith("uk")) return "uk";
+      if (tgLang?.startsWith("ru")) return "ru";
       if (tgLang?.startsWith("en")) return "en";
       return "uk";
     },

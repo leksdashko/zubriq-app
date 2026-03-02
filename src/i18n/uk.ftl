@@ -76,3 +76,4 @@ errors-no_active_session = У тебе немає активної сесії. �
 
 languages-uk = 🇺🇦 Українська
 languages-en = 🇬🇧 English
+languages-ru = Русский
