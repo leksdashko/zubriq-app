@@ -28,6 +28,22 @@ export async function createBot(token: string): Promise<Bot<BotContext>> {
     { command: "help", description: "Довідка" },
   ]);
 
+  // Bot description — shown on the start screen before user presses "Start"
+  await bot.api.setMyDescription(
+    "Що може цей бот?\n\n" +
+    "👋 Ласкаво просимо до Zubriq!\n" +
+    "🧠 Допомагаю ефективно запам'ятовувати слова за допомогою інтервального повторення (SM-2).\n" +
+    "🔔 Як працює: додай слово з перекладом → обери темп → отримуй сповіщення зі словами у Telegram.\n" +
+    "🌍 Підтримує будь-яку пару мов — вчи те, що потрібно саме тобі.\n" +
+    "📦 Імпортуй та експортуй свій словник.\n" +
+    "⚡ Безкоштовно. Без реєстрації. Просто натисни Start."
+  );
+
+  // Short description — shown in the bot's profile / search results
+  await bot.api.setMyShortDescription(
+    "Telegram-бот для вивчення слів через розумні сповіщення. Інтервальне повторення SM-2. Будь-яка мова. Безкоштовно."
+  );
+
   // Error handler
   bot.catch(errorHandler);
 
