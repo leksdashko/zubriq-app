@@ -4,7 +4,6 @@ export function languageKeyboard(): InlineKeyboard {
   return new InlineKeyboard()
     .text("🇺🇦 Українська", "s:lang:uk")
     .text("🇬🇧 English", "s:lang:en")
-    .row()
     .text("Русский", "s:lang:ru");
 }
 

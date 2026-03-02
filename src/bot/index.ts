@@ -29,19 +29,47 @@ export async function createBot(token: string): Promise<Bot<BotContext>> {
   ]);
 
   // Bot description — shown on the start screen before user presses "Start"
+  // Default (English)
   await bot.api.setMyDescription(
-    "Що може цей бот?\n\n" +
-    "👋 Ласкаво просимо до Zubriq!\n" +
-    "🧠 Допомагаю ефективно запам'ятовувати слова за допомогою інтервального повторення (SM-2).\n" +
+    "Welcome to Zubriq!\n" +
+    "🧠 Helping you memorize words effectively with spaced repetition.\n" +
+    "🔔 How it works: add a word with translation → choose pace → get Telegram notifications with words.\n" +
+    "🌍 Supports any language pair — learn what you need.\n" +
+    "📦 Import and export your dictionary.\n" +
+    "⚡️ Free. No registration. Just press Start."
+  );
+  // Ukrainian
+  await bot.api.setMyDescription(
+    "Ласкаво просимо до Zubriq!\n" +
+    "🧠 Допомагаю ефективно запам'ятовувати слова за допомогою інтервального повторення.\n" +
     "🔔 Як працює: додай слово з перекладом → обери темп → отримуй сповіщення зі словами у Telegram.\n" +
     "🌍 Підтримує будь-яку пару мов — вчи те, що потрібно саме тобі.\n" +
     "📦 Імпортуй та експортуй свій словник.\n" +
-    "⚡ Безкоштовно. Без реєстрації. Просто натисни Start."
+    "⚡️ Безкоштовно. Без реєстрації. Просто натисни Start.",
+    { language_code: "uk" }
+  );
+  // Russian
+  await bot.api.setMyDescription(
+    "Добро пожаловать в Zubriq!\n" +
+    "🧠 Помогаю эффективно запоминать слова с помощью интервального повторения.\n" +
+    "🔔 Как работает: добавь слово с переводом → выбери темп → получай уведомления со словами в Telegram.\n" +
+    "🌍 Поддерживает любую пару языков — учи то, что нужно именно тебе.\n" +
+    "📦 Импортируй и экспортируй свой словарь.\n" +
+    "⚡️ Бесплатно. Без регистрации. Просто нажми Start.",
+    { language_code: "ru" }
   );
 
   // Short description — shown in the bot's profile / search results
   await bot.api.setMyShortDescription(
-    "Telegram-бот для вивчення слів через розумні сповіщення. Інтервальне повторення SM-2. Будь-яка мова. Безкоштовно."
+    "Telegram bot for learning words with smart notifications. SM-2 spaced repetition. Any language. Free."
+  );
+  await bot.api.setMyShortDescription(
+    "Telegram-бот для вивчення слів через розумні сповіщення. Інтервальне повторення SM-2. Будь-яка мова. Безкоштовно.",
+    { language_code: "uk" }
+  );
+  await bot.api.setMyShortDescription(
+    "Telegram-бот для изучения слов через умные уведомления. Интервальное повторение SM-2. Любой язык. Бесплатно.",
+    { language_code: "ru" }
   );
 
   // Error handler
