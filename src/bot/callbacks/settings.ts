@@ -47,6 +47,7 @@ export function registerSettingsCallbacks(bot: Composer<BotContext>): void {
     try {
       const user = await updateUserLanguage(authCtx.dbUser.id, langCode);
       authCtx.dbUser = user;
+      await ctx.i18n.renegotiateLocale();
 
       // After language set, ask for target language (onboarding flow)
       await ctx.editMessageText(ctx.t("settings-lang_updated"));
