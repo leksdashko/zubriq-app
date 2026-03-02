@@ -16,9 +16,7 @@ export function targetLanguageKeyboard(): InlineKeyboard {
     .text("🇫🇷 Français", "s:target:fr")
     .row()
     .text("🇪🇸 Español", "s:target:es")
-    .text("🇵🇱 Polski", "s:target:pl")
-    .row()
-    .text("Русский", "s:target:ru");
+    .text("🇵🇱 Polski", "s:target:pl");
 }
 
 export function flashcardKeyboard(wordId: number): InlineKeyboard {
