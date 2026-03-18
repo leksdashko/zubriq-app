@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wisentry: Lock Screen Flashcard App with Spaced Repetition</title>
+<meta name="description" content="Learn vocabulary without opening an app. Wisentry delivers spaced repetition flashcard notifications to your lock screen. Download free for iOS & Android.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ========== CSS CUSTOM PROPERTIES ========== */
+:root {
+  --color-primary: #4F46E5;
+  --color-primary-dark: #3730A3;
+  --color-primary-light: #EEF2FF;
+  --color-accent: #F59E0B;
+  --color-accent-light: #FEF3C7;
+  --color-success: #10B981;
+  --color-bg-white: #FFFFFF;
+  --color-bg-light: #F9FAFB;
+  --color-bg-dark: #1E1B4B;
+  --color-text-primary: #111827;
+  --color-text-secondary: #6B7280;
+  --color-text-tertiary: #9CA3AF;
+  --color-border: #E5E7EB;
+  --color-card-shadow: rgba(79, 70, 229, 0.08);
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --container-max: 1200px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+  --sp-20: 80px;
+  --sp-24: 96px;
+  --sp-30: 120px;
+}
+
+/* ========== RESET & BASE ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font-family);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  background: var(--color-bg-white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+ul, ol { list-style: none; }
+
+/* ========== UTILITY ========== */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--sp-6);
+}
+.section-padding {
+  padding-top: var(--sp-30);
+  padding-bottom: var(--sp-30);
+}
+.text-center { text-align: center; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* ========== TYPOGRAPHY ========== */
+h1 {
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+}
+h2 {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+}
+h3 {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-text-primary);
+}
+.body-lg {
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+.section-subtitle {
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  max-width: 600px;
+  margin: var(--sp-4) auto 0;
+}
+
+/* ========== BUTTONS ========== */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: 14px 28px;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(79,70,229,0.25);
+}
+.btn-primary:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(79,70,229,0.35);
+}
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: 14px 28px;
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 16px;
+  font-weight: 600;
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.btn-secondary:hover {
+  background: var(--color-primary);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.animate-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ========== NAVIGATION ========== */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--color-border);
+  transition: box-shadow 0.3s;
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+.nav-logo svg { flex-shrink: 0; }
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-8);
+}
+.nav-links a {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--color-primary); }
+.nav-cta {
+  padding: 10px 22px;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  transition: background 0.2s;
+}
+.nav-cta:hover { background: var(--color-primary-dark); }
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px;
+}
+.nav-hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--color-text-primary);
+  border-radius: 2px;
+  transition: transform 0.3s, opacity 0.3s;
+}
+.nav-mobile-menu {
+  display: none;
+  position: fixed;
+  top: 72px; left: 0; right: 0; bottom: 0;
+  background: rgba(255,255,255,0.98);
+  backdrop-filter: blur(16px);
+  padding: var(--sp-8) var(--sp-6);
+  z-index: 999;
+}
+.nav-mobile-menu.open { display: flex; flex-direction: column; gap: var(--sp-6); }
+.nav-mobile-menu a {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  padding: var(--sp-3) 0;
+}
+
+/* ========== HERO ========== */
+.hero {
+  padding-top: 140px;
+  padding-bottom: var(--sp-30);
+  background: linear-gradient(135deg, #F5F3FF 0%, #EEF2FF 40%, #FDF4FF 100%);
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(79,70,229,0.08) 0%, transparent 70%);
+  top: -100px; right: -100px;
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,158,11,0.06) 0%, transparent 70%);
+  bottom: -50px; left: -50px;
+  pointer-events: none;
+}
+.hero-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: var(--sp-16);
+}
+.hero-content { position: relative; z-index: 1; }
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 6px 14px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--sp-6);
+}
+.hero h1 { margin-bottom: var(--sp-6); }
+.hero .body-lg {
+  max-width: 500px;
+  margin-bottom: var(--sp-8);
+}
+.hero-ctas {
+  display: flex;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+.store-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 12px 24px;
+  background: var(--color-text-primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  transition: background 0.2s, transform 0.2s;
+}
+.store-badge:hover {
+  background: #000;
+  transform: translateY(-2px);
+}
+.store-badge svg { flex-shrink: 0; }
+.store-badge-text { display: flex; flex-direction: column; line-height: 1.2; }
+.store-badge-text small { font-size: 10px; font-weight: 400; opacity: 0.8; }
+.store-badge-text span { font-size: 16px; font-weight: 600; }
+.hero-visual {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+.hero-phone {
+  width: 300px;
+  border-radius: 32px;
+  box-shadow: 0 40px 80px rgba(79,70,229,0.15), 0 16px 32px rgba(0,0,0,0.08);
+  transform: rotate(2deg);
+  transition: transform 0.4s ease;
+}
+.hero-phone:hover { transform: rotate(0deg) scale(1.02); }
+
+/* ========== PROBLEM SECTION ========== */
+.problem { background: var(--color-bg-white); }
+.problem-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-6);
+  margin-top: var(--sp-12);
+  margin-bottom: var(--sp-12);
+}
+.problem-card {
+  padding: var(--sp-8);
+  background: var(--color-bg-light);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.problem-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px var(--color-card-shadow);
+}
+.problem-icon {
+  width: 64px; height: 64px;
+  margin: 0 auto var(--sp-5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FEE2E2;
+  border-radius: var(--radius-md);
+}
+.problem-icon svg { width: 32px; height: 32px; color: #EF4444; }
+.problem-card h3 { margin-bottom: var(--sp-2); }
+.problem-card p { color: var(--color-text-secondary); font-size: 15px; }
+.problem-transition {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-align: center;
+}
+
+/* ========== FEATURES SECTION ========== */
+.features { background: var(--color-bg-light); }
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-6);
+  margin-top: var(--sp-12);
+}
+.feature-card {
+  padding: var(--sp-8);
+  background: var(--color-bg-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px var(--color-card-shadow);
+  border-color: transparent;
+}
+.feature-icon {
+  width: 48px; height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-light);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--sp-4);
+}
+.feature-icon svg { width: 24px; height: 24px; color: var(--color-primary); }
+.feature-card h3 { margin-bottom: var(--sp-2); font-size: 18px; }
+.feature-card p { color: var(--color-text-secondary); font-size: 15px; line-height: 1.6; }
+
+/* ========== HOW IT WORKS ========== */
+.how-it-works { background: var(--color-bg-white); }
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-10);
+  margin-top: var(--sp-16);
+  position: relative;
+}
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 28px;
+  left: calc(16.67% + 28px);
+  right: calc(16.67% + 28px);
+  height: 3px;
+  background: var(--color-border);
+  z-index: 0;
+}
+.step { text-align: center; position: relative; z-index: 1; }
+.step-number {
+  width: 56px; height: 56px;
+  margin: 0 auto var(--sp-6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(79,70,229,0.3);
+}
+.step-phone {
+  width: 200px;
+  margin: 0 auto var(--sp-6);
+  border-radius: 24px;
+  box-shadow: 0 20px 48px rgba(0,0,0,0.1);
+}
+.step h3 { margin-bottom: var(--sp-2); }
+.step p { color: var(--color-text-secondary); font-size: 15px; max-width: 280px; margin: 0 auto; }
+
+/* ========== APP SCREENSHOTS ========== */
+.app-preview { background: var(--color-bg-light); }
+.screenshots-scroll {
+  display: flex;
+  gap: var(--sp-6);
+  overflow-x: auto;
+  padding: var(--sp-12) var(--sp-6) var(--sp-8);
+  margin: 0 calc(-1 * var(--sp-6));
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.screenshots-scroll::-webkit-scrollbar { display: none; }
+.screenshot-item {
+  flex-shrink: 0;
+  width: 220px;
+  scroll-snap-align: center;
+  transition: transform 0.3s;
+}
+.screenshot-item:hover { transform: translateY(-8px) rotate(-1deg); }
+.screenshot-item img {
+  width: 100%;
+  border-radius: 24px;
+  box-shadow: 0 24px 56px rgba(0,0,0,0.12);
+}
+
+/* ========== TESTIMONIALS ========== */
+.testimonials { background: var(--color-bg-dark); color: #fff; }
+.testimonials h2 { color: #fff; }
+.testimonials .section-subtitle { color: rgba(255,255,255,0.6); }
+.testimonial-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-6);
+  margin-top: var(--sp-12);
+}
+.testimonial-card {
+  padding: var(--sp-8);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(8px);
+}
+.testimonial-stars {
+  display: flex;
+  gap: 2px;
+  margin-bottom: var(--sp-4);
+}
+.testimonial-stars svg { width: 18px; height: 18px; color: var(--color-accent); fill: var(--color-accent); }
+.testimonial-card blockquote {
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: var(--sp-6);
+  font-style: italic;
+}
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.testimonial-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+.testimonial-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* ========== STATS ========== */
+.stats { background: var(--color-bg-white); }
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-8);
+  margin-top: var(--sp-12);
+}
+.stat-item { text-align: center; }
+.stat-number {
+  font-size: 56px;
+  font-weight: 800;
+  color: var(--color-primary);
+  line-height: 1;
+  margin-bottom: var(--sp-2);
+}
+.stat-label {
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+.trust-badges {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--sp-8);
+  margin-top: var(--sp-12);
+  padding-top: var(--sp-8);
+  border-top: 1px solid var(--color-border);
+}
+.trust-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: 14px;
+  color: var(--color-text-tertiary);
+  font-weight: 500;
+}
+.trust-badge svg { width: 20px; height: 20px; }
+
+/* ========== PRICING ========== */
+.pricing { background: var(--color-bg-light); }
+.pricing-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-8);
+  margin-top: var(--sp-12);
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.pricing-card {
+  padding: var(--sp-10);
+  background: var(--color-bg-white);
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--color-border);
+  position: relative;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.pricing-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px var(--color-card-shadow);
+}
+.pricing-card.recommended {
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 32px rgba(79,70,229,0.12);
+}
+.pricing-badge {
+  position: absolute;
+  top: -14px; left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 16px;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.pricing-tier {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--sp-4);
+}
+.pricing-price {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-1);
+  margin-bottom: var(--sp-6);
+}
+.pricing-amount {
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+.pricing-period {
+  font-size: 16px;
+  color: var(--color-text-tertiary);
+}
+.pricing-features {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-8);
+}
+.pricing-feature {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-size: 15px;
+  color: var(--color-text-secondary);
+}
+.pricing-feature svg { width: 20px; height: 20px; color: var(--color-success); flex-shrink: 0; }
+.pricing-card .btn-primary,
+.pricing-card .btn-secondary { width: 100%; }
+
+/* ========== FAQ ========== */
+.faq { background: var(--color-bg-white); }
+.faq-list {
+  max-width: 700px;
+  margin: var(--sp-12) auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.faq-item {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.faq-item[open] { border-color: var(--color-primary); }
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-5) var(--sp-6);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  min-height: 56px;
+  user-select: none;
+  list-style: none;
+  transition: background 0.2s;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary:hover { background: var(--color-bg-light); }
+.faq-item summary::after {
+  content: '';
+  width: 20px; height: 20px;
+  flex-shrink: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  transition: transform 0.3s;
+}
+.faq-item[open] summary::after { transform: rotate(180deg); }
+.faq-answer {
+  padding: 0 var(--sp-6) var(--sp-5);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+}
+
+/* ========== FINAL CTA ========== */
+.final-cta {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: #fff;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.final-cta::before {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+  top: -150px; right: -100px;
+}
+.final-cta h2 { color: #fff; font-size: 44px; margin-bottom: var(--sp-4); }
+.final-cta p {
+  font-size: 18px;
+  color: rgba(255,255,255,0.8);
+  max-width: 500px;
+  margin: 0 auto var(--sp-8);
+}
+.final-cta-badges {
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-10);
+}
+.final-cta .store-badge {
+  background: #fff;
+  color: var(--color-text-primary);
+}
+.final-cta .store-badge:hover { background: #F3F4F6; }
+.email-form {
+  display: flex;
+  max-width: 440px;
+  margin: 0 auto;
+  gap: var(--sp-3);
+}
+.email-form input {
+  flex: 1;
+  padding: 14px 20px;
+  font-size: 15px;
+  font-family: var(--font-family);
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+  min-height: 48px;
+}
+.email-form input::placeholder { color: rgba(255,255,255,0.5); }
+.email-form input:focus { border-color: rgba(255,255,255,0.5); }
+.email-form button {
+  padding: 14px 24px;
+  background: #fff;
+  color: var(--color-primary);
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.2s;
+}
+.email-form button:hover { background: #F3F4F6; transform: translateY(-1px); }
+.email-hint {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  margin-top: var(--sp-3);
+}
+
+/* ========== FOOTER ========== */
+.footer {
+  background: var(--color-bg-white);
+  border-top: 1px solid var(--color-border);
+  padding: var(--sp-16) 0 var(--sp-8);
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: var(--sp-10);
+  margin-bottom: var(--sp-12);
+}
+.footer-brand { max-width: 280px; }
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-primary);
+  margin-bottom: var(--sp-3);
+}
+.footer-tagline { font-size: 14px; color: var(--color-text-tertiary); }
+.footer-column h4 {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--sp-4);
+}
+.footer-column a {
+  display: block;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  padding: var(--sp-1) 0;
+  transition: color 0.2s;
+}
+.footer-column a:hover { color: var(--color-primary); }
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--sp-8);
+  border-top: 1px solid var(--color-border);
+}
+.footer-copyright { font-size: 13px; color: var(--color-text-tertiary); }
+.footer-social {
+  display: flex;
+  gap: var(--sp-4);
+}
+.footer-social a {
+  width: 40px; height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-bg-light);
+  color: var(--color-text-secondary);
+  transition: background 0.2s, color 0.2s;
+}
+.footer-social a:hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+.footer-social svg { width: 18px; height: 18px; }
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1023px) {
+  h1 { font-size: 44px; }
+  h2 { font-size: 32px; }
+  .section-padding { padding-top: var(--sp-20); padding-bottom: var(--sp-20); }
+  .hero { padding-top: 120px; padding-bottom: var(--sp-20); }
+  .hero-inner { grid-template-columns: 1fr; text-align: center; gap: var(--sp-10); }
+  .hero .body-lg { max-width: none; margin-left: auto; margin-right: auto; }
+  .hero-ctas { justify-content: center; }
+  .hero-phone { width: 260px; }
+  .steps::before { display: none; }
+  .steps { grid-template-columns: 1fr; gap: var(--sp-12); }
+  .testimonial-cards { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 767px) {
+  h1 { font-size: 34px; }
+  h2 { font-size: 28px; }
+  .stat-number { font-size: 40px; }
+  .section-padding { padding-top: var(--sp-16); padding-bottom: var(--sp-16); }
+  .hero { padding-top: 108px; padding-bottom: var(--sp-16); }
+  .container { padding: 0 var(--sp-5); }
+  .nav-links { display: none; }
+  .nav-hamburger { display: flex; }
+  .problem-cards { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: 1fr; }
+  .pricing-cards { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr; gap: var(--sp-8); }
+  .trust-badges { flex-direction: column; gap: var(--sp-4); }
+  .email-form { flex-direction: column; }
+  .final-cta h2 { font-size: 32px; }
+  .footer-grid { grid-template-columns: 1fr; gap: var(--sp-8); }
+  .footer-bottom { flex-direction: column; gap: var(--sp-4); text-align: center; }
+  .hero-ctas { flex-direction: column; align-items: center; }
+  .store-badge { width: 100%; max-width: 240px; justify-content: center; }
+  .final-cta-badges { flex-direction: column; align-items: center; }
+}
+
+/* ========== SCHEMA / SEO ========== */
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Wisentry",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "iOS, Android",
+  "offers": [
+    {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "description": "Free tier: up to 50 words, 1 active session, basic stats"
+    },
+    {
+      "@type": "Offer",
+      "price": "4.99",
+      "priceCurrency": "USD",
+      "description": "Pro: Unlimited words, multiple sessions, advanced stats"
+    }
+  ],
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "ratingCount": "50000"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How is this different from Duolingo or Anki?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Duolingo requires 10-20 minute sessions. Anki lives on desktop. Wisentry works in 3-second glances on your lock screen — no app opening required."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do notifications work when my phone is locked?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. You can rate flashcards directly from your lock screen without unlocking your phone."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I import my Anki decks?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. You can import word lists from Anki, Quizlet, or any CSV file."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What languages are supported?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "English, Ukrainian, German, French, Spanish, and Polish."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is my data private?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Your word lists stay on your device. We don't sell data."
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<!-- ========== NAVIGATION ========== -->
+<nav class="nav" role="navigation" aria-label="Main navigation">
+  <div class="container nav-inner">
+    <a href="#" class="nav-logo" aria-label="Wisentry home">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+        <rect width="28" height="28" rx="8" fill="#4F46E5"/>
+        <path d="M8 10h12M8 14h8M8 18h10" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Wisentry
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How it Works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a href="#final-cta" class="nav-cta">Download App</a>
+    <button class="nav-hamburger" type="button" aria-label="Open menu" onclick="document.querySelector('.nav-mobile-menu').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="nav-mobile-menu" role="dialog" aria-label="Mobile menu">
+  <a href="#features" onclick="document.querySelector('.nav-mobile-menu').classList.remove('open')">Features</a>
+  <a href="#how-it-works" onclick="document.querySelector('.nav-mobile-menu').classList.remove('open')">How it Works</a>
+  <a href="#pricing" onclick="document.querySelector('.nav-mobile-menu').classList.remove('open')">Pricing</a>
+  <a href="#faq" onclick="document.querySelector('.nav-mobile-menu').classList.remove('open')">FAQ</a>
+</div>
+
+<!-- ========== HERO ========== -->
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Spaced Repetition Flashcard App
+      </div>
+      <h1>Learn new words without opening an app</h1>
+      <p class="body-lg">Wisentry sends you smart flashcard notifications at the perfect moment. Just glance, rate, and keep going with your day.</p>
+      <div class="hero-ctas">
+        <a href="#" class="store-badge" aria-label="Download on the App Store">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          <div class="store-badge-text">
+            <small>Download on the</small>
+            <span>App Store</span>
+          </div>
+        </a>
+        <a href="#" class="store-badge" aria-label="Get it on Google Play">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.18 23.08c-.44-.27-.68-.73-.68-1.33V2.25c0-.6.24-1.06.68-1.33l11.06 11.08L3.18 23.08zm15.16-9.73l-3.07-1.73-3.27 3.28 3.27 3.28 3.07-1.73c.85-.48.85-1.62 0-2.1zM4.48.84L15.3 6.91l-2.48 2.49L4.48.84zm0 22.32l8.34-8.56 2.48 2.49L4.48 23.16z"/></svg>
+          <div class="store-badge-text">
+            <small>Get it on</small>
+            <span>Google Play</span>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <img class="hero-phone" src="images/img-mms88qhq-okge8tov.png" alt="Wisentry flashcard notification on a phone lock screen showing the Ukrainian word Привіт" width="300" height="650">
+    </div>
+  </div>
+</section>
+
+<!-- ========== PROBLEM ========== -->
+<section class="problem section-padding">
+  <div class="container">
+    <h2 class="text-center">Language apps demand too much time</h2>
+    <div class="problem-cards">
+      <div class="problem-card animate-on-scroll">
+        <div class="problem-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="10" y1="14" x2="14" y2="18"/><line x1="14" y1="14" x2="10" y2="18"/></svg>
+        </div>
+        <h3>You forget to open the app</h3>
+        <p>Life gets busy. The app icon sits untouched for weeks.</p>
+      </div>
+      <div class="problem-card animate-on-scroll">
+        <div class="problem-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="12" y1="14" x2="12" y2="14.01"/><path d="M10 6h4"/><rect x="9" y="9" width="6" height="3" fill="#EF4444" opacity="0.3"/></svg>
+        </div>
+        <h3>Long sessions kill motivation</h3>
+        <p>20-minute lessons feel like homework. You quit before building a habit.</p>
+      </div>
+      <div class="problem-card animate-on-scroll">
+        <div class="problem-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a7 7 0 0 1 7 7c0 3-2 5.5-3 7h-8c-1-1.5-3-4-3-7a7 7 0 0 1 7-7z"/><path d="M9 22h6"/><path d="M9 18h6"/><line x1="15" y1="12" x2="18" y2="15"/></svg>
+        </div>
+        <h3>Words fade without repetition</h3>
+        <p>You learn a word, skip two days, and it's gone. The forgetting curve wins.</p>
+      </div>
+    </div>
+    <p class="problem-transition animate-on-scroll">Wisentry flips the script — the words come to you.</p>
+  </div>
+</section>
+
+<!-- ========== FEATURES ========== -->
+<section class="features section-padding" id="features">
+  <div class="container">
+    <h2 class="text-center">Everything you need, nothing you don't</h2>
+    <p class="section-subtitle text-center">Six powerful features. Zero bloat.</p>
+    <div class="features-grid">
+      <div class="feature-card animate-on-scroll">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/><path d="M2 8c0-3.31 2.69-6 6-6"/><circle cx="18" cy="4" r="3" fill="#4F46E5" opacity="0.2"/></svg>
+        </div>
+        <h3>Smart Notifications</h3>
+        <p>Get flashcards as push notifications at intervals you choose: every 5 min, 30 min, or random.</p>
+      </div>
+      <div class="feature-card animate-on-scroll">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a7 7 0 0 1 7 7c0 3-2 5.5-3 7h-8c-1-1.5-3-4-3-7a7 7 0 0 1 7-7z"/><path d="M9 22h6"/><path d="M9 18h6"/><path d="M8 12l2-2 2 2 4-4" stroke="#4F46E5"/></svg>
+        </div>
+        <h3>Spaced Repetition (SM-2)</h3>
+        <p>Words you struggle with show up more often. Words you know fade away. Science-backed algorithm.</p>
+      </div>
+      <div class="feature-card animate-on-scroll">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5"/></svg>
+        </div>
+        <h3>Tap to Rate</h3>
+        <p>See a word, tap "Know" or "Hard" — done in 3 seconds. No app opening required.</p>
+      </div>
+      <div class="feature-card animate-on-scroll">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <h3>6 Languages</h3>
+        <p>Learn English, Ukrainian, German, French, Spanish, or Polish.</p>
+      </div>
+      <div class="feature-card animate-on-scroll">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="M8 21H3v-5"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+        </div>
+        <h3>Import & Export</h3>
+        <p>Bring your word lists from other apps. Export anytime. Your data, your control.</p>
+      </div>
+      <div class="feature-card animate-on-scroll">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="13" y2="12"/></svg>
+        </div>
+        <h3>Context Sentences</h3>
+        <p>Add example sentences to each word for deeper, more meaningful learning.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== HOW IT WORKS ========== -->
+<section class="how-it-works section-padding" id="how-it-works">
+  <div class="container">
+    <h2 class="text-center">Start learning in 60 seconds</h2>
+    <p class="section-subtitle text-center">Three steps. No signup wall. No credit card.</p>
+    <div class="steps">
+      <div class="step animate-on-scroll">
+        <div class="step-number">1</div>
+        <img class="step-phone" src="images/img-mms8922x-9m8pa8sv.png" alt="Wisentry add word screen showing a word input form" width="200" height="433" loading="lazy">
+        <h3>Add words</h3>
+        <p>Type a word and its translation, or import a list from Anki, Quizlet, or CSV.</p>
+      </div>
+      <div class="step animate-on-scroll">
+        <div class="step-number">2</div>
+        <img class="step-phone" src="images/img-mms898zr-g779gnwr.png" alt="Wisentry frequency settings screen with notification pace options" width="200" height="433" loading="lazy">
+        <h3>Set your pace</h3>
+        <p>Choose how often you want notifications: every 5 min, 30 min, or random intervals.</p>
+      </div>
+      <div class="step animate-on-scroll">
+        <div class="step-number">3</div>
+        <img class="step-phone" src="images/img-mms89ik6-pzj9lmu8.png" alt="Wisentry flashcard notification with Know and Hard rating buttons" width="200" height="433" loading="lazy">
+        <h3>Learn passively</h3>
+        <p>Rate each flashcard when it pops up. That's it. No sessions, no streaks, no guilt.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== APP SCREENSHOTS ========== -->
+<section class="app-preview section-padding">
+  <div class="container">
+    <h2 class="text-center">Designed for zero friction</h2>
+    <p class="section-subtitle text-center">Clean, focused screens that get out of your way.</p>
+    <div class="screenshots-scroll">
+      <div class="screenshot-item">
+        <img src="images/img-mms89rbl-5l8jvkat.png" alt="Wisentry dashboard showing learning statistics and progress" width="220" height="476" loading="lazy">
+      </div>
+      <div class="screenshot-item">
+        <img src="images/img-mms8abn7-7qgy652k.png" alt="Wisentry flashcard review screen" width="220" height="476" loading="lazy">
+      </div>
+      <div class="screenshot-item">
+        <img src="images/img-mms8a0yu-smgq03ur.png" alt="Wisentry dictionary word list with mastery indicators" width="220" height="476" loading="lazy">
+      </div>
+      <div class="screenshot-item">
+        <img src="images/img-mms88qhq-okge8tov.png" alt="Wisentry lock screen notification flashcard" width="220" height="476" loading="lazy">
+      </div>
+      <div class="screenshot-item">
+        <img src="images/img-mms898zr-g779gnwr.png" alt="Wisentry notification frequency settings" width="220" height="476" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== TESTIMONIALS ========== -->
+<section class="testimonials section-padding">
+  <div class="container">
+    <h2 class="text-center">Loved by learners</h2>
+    <p class="section-subtitle text-center">Real feedback from real users.</p>
+    <div class="testimonial-cards">
+      <div class="testimonial-card animate-on-scroll">
+        <div class="testimonial-stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <blockquote>"I learned 200 German words in a month without ever feeling like I was studying."</blockquote>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">M</div>
+          <div class="testimonial-name">Maria K.</div>
+        </div>
+      </div>
+      <div class="testimonial-card animate-on-scroll">
+        <div class="testimonial-stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <blockquote>"The notifications are genius. I actually look forward to them."</blockquote>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">J</div>
+          <div class="testimonial-name">James P.</div>
+        </div>
+      </div>
+      <div class="testimonial-card animate-on-scroll">
+        <div class="testimonial-stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <blockquote>"Finally an app that works with my schedule, not against it."</blockquote>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">S</div>
+          <div class="testimonial-name">Sophie L.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== STATS ========== -->
+<section class="stats section-padding">
+  <div class="container">
+    <h2 class="text-center">Trusted by thousands of learners</h2>
+    <div class="stats-grid">
+      <div class="stat-item animate-on-scroll">
+        <div class="stat-number">50,000+</div>
+        <div class="stat-label">Downloads</div>
+      </div>
+      <div class="stat-item animate-on-scroll">
+        <div class="stat-number">2M+</div>
+        <div class="stat-label">Flashcards reviewed</div>
+      </div>
+      <div class="stat-item animate-on-scroll">
+        <div class="stat-number">4.8</div>
+        <div class="stat-label">Average rating</div>
+      </div>
+    </div>
+    <div class="trust-badges">
+      <div class="trust-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Featured on Product Hunt
+      </div>
+      <div class="trust-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        4.8 on App Store
+      </div>
+      <div class="trust-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        4.7 on Google Play
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PRICING ========== -->
+<section class="pricing section-padding" id="pricing">
+  <div class="container">
+    <h2 class="text-center">Free to start. Upgrade when you're ready.</h2>
+    <p class="section-subtitle text-center">No credit card required. Learn for free, forever.</p>
+    <div class="pricing-cards">
+      <div class="pricing-card">
+        <div class="pricing-tier">Free</div>
+        <div class="pricing-price">
+          <span class="pricing-amount">$0</span>
+          <span class="pricing-period">/forever</span>
+        </div>
+        <div class="pricing-features">
+          <div class="pricing-feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Up to 50 words
+          </div>
+          <div class="pricing-feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            1 active session
+          </div>
+          <div class="pricing-feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Basic statistics
+          </div>
+          <div class="pricing-feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Spaced repetition
+          </div>
+        </div>
+        <a href="#" class="btn-secondary" style="width:100%;text-align:center;">Get Started</a>
+      </div>
+      <div class="pricing-card recommended">
+        <div class="pricing-badge">Recommended</div>
+        <div class="pricing-tier">Pro</div>
+        <div class="pricing-price">
+          <span class="pricing-amount">$4.99</span>
+          <span class="pricing-period">/month</span>
+        </div>
+        <div class="pricing-features">
+          <div class="pricing-feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Unlimited words
+          </div>
+          <div class="pricing-feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Multiple sessions
+          </div>
+          <div class="pricing-feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Advanced statistics
+          </div>
+          <div class="pricing-feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Import & Export
+          </div>
+          <div class="pricing-feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Priority support
+          </div>
+        </div>
+        <a href="#" class="btn-primary" style="width:100%;text-align:center;">Start Free Trial</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FAQ ========== -->
+<section class="faq section-padding" id="faq">
+  <div class="container">
+    <h2 class="text-center">Questions? Answers.</h2>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary>How is this different from Duolingo or Anki?</summary>
+        <div class="faq-answer">Duolingo requires 10-20 minute sessions. Anki lives on desktop. Wisentry works in 3-second glances on your lock screen — no app opening required. It fits into the moments between things you're already doing.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Do notifications work when my phone is locked?</summary>
+        <div class="faq-answer">Yes. You can see the flashcard and rate it directly from your lock screen without unlocking your phone. That's the whole point — zero friction.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Can I import my Anki decks?</summary>
+        <div class="faq-answer">Yes. You can import word lists from Anki, Quizlet, or any CSV file. Your existing vocabulary work isn't wasted.</div>
+      </details>
+      <details class="faq-item">
+        <summary>What languages are supported?</summary>
+        <div class="faq-answer">Currently: English, Ukrainian, German, French, Spanish, and Polish. More languages are on the way.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Is my data private?</summary>
+        <div class="faq-answer">Your word lists stay on your device. We don't sell data, period. You can export everything at any time.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FINAL CTA ========== -->
+<section class="final-cta section-padding" id="final-cta">
+  <div class="container" style="position:relative;z-index:1;">
+    <h2>Start memorizing smarter today</h2>
+    <p>Join thousands of learners who build vocabulary without breaking their routine.</p>
+    <div class="final-cta-badges">
+      <a href="#" class="store-badge" aria-label="Download on the App Store">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        <div class="store-badge-text">
+          <small>Download on the</small>
+          <span>App Store</span>
+        </div>
+      </a>
+      <a href="#" class="store-badge" aria-label="Get it on Google Play">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.18 23.08c-.44-.27-.68-.73-.68-1.33V2.25c0-.6.24-1.06.68-1.33l11.06 11.08L3.18 23.08zm15.16-9.73l-3.07-1.73-3.27 3.28 3.27 3.28 3.07-1.73c.85-.48.85-1.62 0-2.1zM4.48.84L15.3 6.91l-2.48 2.49L4.48.84zm0 22.32l8.34-8.56 2.48 2.49L4.48 23.16z"/></svg>
+        <div class="store-badge-text">
+          <small>Get it on</small>
+          <span>Google Play</span>
+        </div>
+      </a>
+    </div>
+    <form class="email-form" onsubmit="event.preventDefault()">
+      <input type="email" placeholder="Enter your email" aria-label="Email address to receive download link" required>
+      <button type="submit">Send Link</button>
+    </form>
+    <p class="email-hint">Get the download link on your phone</p>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <svg width="24" height="24" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+            <rect width="28" height="28" rx="8" fill="#4F46E5"/>
+            <path d="M8 10h12M8 14h8M8 18h10" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Wisentry
+        </div>
+        <p class="footer-tagline">Learn words, not habits.</p>
+      </div>
+      <div class="footer-column">
+        <h4>Product</h4>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="footer-column">
+        <h4>Company</h4>
+        <a href="#">About</a>
+        <a href="#">Blog</a>
+        <a href="#">Contact</a>
+      </div>
+      <div class="footer-column">
+        <h4>Legal</h4>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copyright">&copy; 2026 Wisentry. All rights reserved.</p>
+      <div class="footer-social">
+        <a href="#" aria-label="Follow on Twitter">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+        <a href="#" aria-label="Follow on Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="#" aria-label="Follow on TikTok">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.88-2.88 2.89 2.89 0 0 1 2.88-2.88c.28 0 .55.04.81.1v-3.52a6.37 6.37 0 0 0-.81-.05A6.34 6.34 0 0 0 3.15 15.3a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V9.05a8.27 8.27 0 0 0 4.76 1.5V7.12a4.83 4.83 0 0 1-1-.43z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ========== SCROLL ANIMATION ========== -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.animate-on-scroll').forEach(function(el) {
+    observer.observe(el);
+  });
+});
+</script>
+
+</body>
+</html>
