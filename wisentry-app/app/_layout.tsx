@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import * as Notifications from 'expo-notifications';
 import {
   useFonts,
   Inter_400Regular,
@@ -10,7 +11,7 @@ import {
   Inter_800ExtraBold,
 } from '@expo-google-fonts/inter';
 import { initializeDatabase } from '@/src/db/schema';
-import { requestNotificationPermissions, rescheduleFromSettings } from '@/src/services/notifications';
+import { requestNotificationPermissions, scheduleNextWordNotification, rescheduleFromSettings } from '@/src/services/notifications';
 import { colors } from '@/src/theme';
 
 export { ErrorBoundary } from 'expo-router';
@@ -48,6 +49,25 @@ export default function RootLayout() {
     }
   }, [dbReady]);
 
+  // When a notification is received while app is foregrounded, schedule the next one
+  useEffect(() => {
+    if (!dbReady) return;
+
+    const receivedSub = Notifications.addNotificationReceivedListener(() => {
+      scheduleNextWordNotification();
+    });
+
+    // When user taps a notification, schedule the next one
+    const responseSub = Notifications.addNotificationResponseReceivedListener(() => {
+      scheduleNextWordNotification();
+    });
+
+    return () => {
+      receivedSub.remove();
+      responseSub.remove();
+    };
+  }, [dbReady]);
+
   useEffect(() => {
     if (fontError) throw fontError;
   }, [fontError]);
@@ -77,6 +97,13 @@ export default function RootLayout() {
         options={{
           presentation: 'modal',
           title: 'Add Word',
+        }}
+      />
+      <Stack.Screen
+        name="import-words"
+        options={{
+          presentation: 'modal',
+          title: 'Import Words',
         }}
       />
     </Stack>

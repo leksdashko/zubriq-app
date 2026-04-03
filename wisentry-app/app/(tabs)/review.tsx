@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { useReview } from '@/src/hooks/useReview';
 import { FlashCard } from '@/src/components/FlashCard';
@@ -8,7 +8,7 @@ import { EmptyState } from '@/src/components/EmptyState';
 import { colors, spacing } from '@/src/theme';
 
 export default function ReviewScreen() {
-  const { currentWord, isFlipped, isComplete, loadNext, flip, answer } = useReview();
+  const { currentWord, isFlipped, isComplete, loadNext, flip, answer, removeWord } = useReview();
 
   useEffect(() => {
     loadNext();
@@ -34,6 +34,24 @@ export default function ReviewScreen() {
     answer(2);
   };
 
+  const handleDelete = () => {
+    Alert.alert(
+      'Delete word',
+      `Delete "${currentWord.original}"? This cannot be undone.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+            removeWord();
+          },
+        },
+      ],
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.cardWrapper}>
@@ -41,19 +59,27 @@ export default function ReviewScreen() {
       </View>
 
       {isFlipped && (
-        <View style={styles.buttons}>
+        <View style={styles.buttonsContainer}>
+          <View style={styles.answerRow}>
+            <Button
+              title="Know"
+              onPress={handleKnow}
+              variant="success"
+              style={styles.answerBtn}
+            />
+            <View style={{ width: spacing.md }} />
+            <Button
+              title="Hard"
+              onPress={handleHard}
+              variant="danger"
+              style={styles.answerBtn}
+            />
+          </View>
           <Button
-            title="Know"
-            onPress={handleKnow}
-            variant="success"
-            style={styles.answerBtn}
-          />
-          <View style={{ width: spacing.md }} />
-          <Button
-            title="Hard"
-            onPress={handleHard}
-            variant="danger"
-            style={styles.answerBtn}
+            title="Delete word"
+            onPress={handleDelete}
+            variant="secondary"
+            style={styles.deleteBtn}
           />
         </View>
       )}
@@ -71,12 +97,17 @@ const styles = StyleSheet.create({
   cardWrapper: {
     alignItems: 'center',
   },
-  buttons: {
-    flexDirection: 'row',
+  buttonsContainer: {
     marginTop: spacing['3xl'],
     paddingHorizontal: spacing.lg,
   },
+  answerRow: {
+    flexDirection: 'row',
+  },
   answerBtn: {
     flex: 1,
+  },
+  deleteBtn: {
+    marginTop: spacing.md,
   },
 });

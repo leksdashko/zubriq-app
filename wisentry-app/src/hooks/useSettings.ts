@@ -5,12 +5,12 @@ import { rescheduleFromSettings } from '../services/notifications';
 
 export function useSettings() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [frequencyMinutes, setFrequencyMinutes] = useState(120);
+  const [frequency, setFrequency] = useState('120');
 
   useFocusEffect(
     useCallback(() => {
       setNotificationsEnabled(getSetting('notifications_enabled', 'true') === 'true');
-      setFrequencyMinutes(parseInt(getSetting('notification_frequency', '120') ?? '120', 10));
+      setFrequency(getSetting('notification_frequency', '120') ?? '120');
     }, []),
   );
 
@@ -20,11 +20,11 @@ export function useSettings() {
     await rescheduleFromSettings();
   }, []);
 
-  const updateFrequency = useCallback(async (minutes: number) => {
-    setSetting('notification_frequency', String(minutes));
-    setFrequencyMinutes(minutes);
+  const updateFrequency = useCallback(async (value: string) => {
+    setSetting('notification_frequency', value);
+    setFrequency(value);
     await rescheduleFromSettings();
   }, []);
 
-  return { notificationsEnabled, frequencyMinutes, updateNotificationsEnabled, updateFrequency };
+  return { notificationsEnabled, frequency, updateNotificationsEnabled, updateFrequency };
 }

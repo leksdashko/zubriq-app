@@ -3,15 +3,18 @@ import { useSettings } from '@/src/hooks/useSettings';
 import { colors, typography, spacing, radius } from '@/src/theme';
 
 const FREQUENCY_OPTIONS = [
-  { label: 'Every 30 min', value: 30 },
-  { label: 'Every hour', value: 60 },
-  { label: 'Every 2 hours', value: 120 },
-  { label: 'Every 4 hours', value: 240 },
-  { label: 'Every 8 hours', value: 480 },
+  ...(__DEV__ ? [{ label: 'Every 1 min (dev)', value: '1' }] : []),
+  { label: 'Every 5 min', value: '5' },
+  { label: 'Every 30 min', value: '30' },
+  { label: 'Every hour', value: '60' },
+  { label: 'Every 2 hours', value: '120' },
+  { label: 'Every 4 hours', value: '240' },
+  { label: 'Every 8 hours', value: '480' },
+  { label: 'Random (5-60 min)', value: 'random' },
 ];
 
 export default function SettingsScreen() {
-  const { notificationsEnabled, frequencyMinutes, updateNotificationsEnabled, updateFrequency } = useSettings();
+  const { notificationsEnabled, frequency, updateNotificationsEnabled, updateFrequency } = useSettings();
 
   return (
     <View style={styles.container}>
@@ -36,14 +39,14 @@ export default function SettingsScreen() {
                 key={opt.value}
                 style={[
                   styles.frequencyOption,
-                  frequencyMinutes === opt.value && styles.frequencyOptionActive,
+                  frequency === opt.value && styles.frequencyOptionActive,
                 ]}
                 onPress={() => updateFrequency(opt.value)}
               >
                 <Text
                   style={[
                     styles.frequencyText,
-                    frequencyMinutes === opt.value && styles.frequencyTextActive,
+                    frequency === opt.value && styles.frequencyTextActive,
                   ]}
                 >
                   {opt.label}
