@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { selectNextWord } from '../services/wordSelection';
 import { calculateSM2 } from '../services/sm2';
-import { upsertProgress } from '../db/progress';
+import { upsertProgress, getWordWithProgress } from '../db/progress';
 import { deleteWord } from '../db/words';
 import { scheduleNextWordNotification } from '../services/notifications';
 import type { WordWithProgress } from '../types';
@@ -57,5 +57,16 @@ export function useReview() {
     loadNext();
   }, [currentWord, loadNext]);
 
-  return { currentWord, isFlipped, isComplete, loadNext, flip, answer, removeWord };
+  const loadWordById = useCallback((wordId: number) => {
+    const word = getWordWithProgress(wordId);
+    if (word) {
+      setCurrentWord(word);
+      setIsFlipped(false);
+      setIsComplete(false);
+    } else {
+      loadNext();
+    }
+  }, [loadNext]);
+
+  return { currentWord, isFlipped, isComplete, loadNext, loadWordById, flip, answer, removeWord };
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Notifications from 'expo-notifications';
 import {
@@ -46,8 +46,22 @@ export default function RootLayout() {
       requestNotificationPermissions().then(() => {
         rescheduleFromSettings();
       });
+
+      // Handle cold start: app opened from a notification while killed
+      Notifications.getLastNotificationResponseAsync().then((response) => {
+        if (response) {
+          const wordId = response.notification.request.content.data?.wordId;
+          if (wordId) {
+            router.navigate({ pathname: '/review', params: { wordId: String(wordId) } });
+          } else {
+            router.navigate('/review');
+          }
+        }
+      });
     }
-  }, [dbReady]);
+  }, [dbReady, router]);
+
+  const router = useRouter();
 
   // When a notification is received while app is foregrounded, schedule the next one
   useEffect(() => {
@@ -57,16 +71,22 @@ export default function RootLayout() {
       scheduleNextWordNotification();
     });
 
-    // When user taps a notification, schedule the next one
-    const responseSub = Notifications.addNotificationResponseReceivedListener(() => {
+    // When user taps a notification, navigate to review with that word
+    const responseSub = Notifications.addNotificationResponseReceivedListener((response) => {
       scheduleNextWordNotification();
+      const wordId = response.notification.request.content.data?.wordId;
+      if (wordId) {
+        router.navigate({ pathname: '/review', params: { wordId: String(wordId) } });
+      } else {
+        router.navigate('/review');
+      }
     });
 
     return () => {
       receivedSub.remove();
       responseSub.remove();
     };
-  }, [dbReady]);
+  }, [dbReady, router]);
 
   useEffect(() => {
     if (fontError) throw fontError;

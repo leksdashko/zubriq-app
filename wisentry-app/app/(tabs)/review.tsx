@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import { useLocalSearchParams } from 'expo-router';
 import { useReview } from '@/src/hooks/useReview';
 import { FlashCard } from '@/src/components/FlashCard';
 import { Button } from '@/src/components/Button';
@@ -8,11 +9,16 @@ import { EmptyState } from '@/src/components/EmptyState';
 import { colors, spacing } from '@/src/theme';
 
 export default function ReviewScreen() {
-  const { currentWord, isFlipped, isComplete, loadNext, flip, answer, removeWord } = useReview();
+  const { wordId } = useLocalSearchParams<{ wordId?: string }>();
+  const { currentWord, isFlipped, isComplete, loadNext, loadWordById, flip, answer, removeWord } = useReview();
 
   useEffect(() => {
-    loadNext();
-  }, [loadNext]);
+    if (wordId) {
+      loadWordById(Number(wordId));
+    } else {
+      loadNext();
+    }
+  }, [wordId, loadWordById, loadNext]);
 
   if (isComplete || !currentWord) {
     return (

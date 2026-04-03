@@ -51,7 +51,7 @@ export async function scheduleNextWordNotification(): Promise<void> {
   const content = word
     ? {
         title: `📝 ${word.original}`,
-        body: 'Tap to review this word',
+        body: 'Think first, then tap to check!',
         data: { wordId: word.id },
         ...(Platform.OS === 'android' && { channelId: 'review' }),
       }

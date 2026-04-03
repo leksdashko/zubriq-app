@@ -1,6 +1,17 @@
 import { getDatabase } from './connection';
 import type { WordWithProgress, Stats } from '../types';
 
+export function getWordWithProgress(wordId: number): WordWithProgress | null {
+  const db = getDatabase();
+  return db.getFirstSync<WordWithProgress>(
+    `SELECT w.*, wp.ease_factor, wp.interval, wp.repetitions, wp.next_review_at, wp.is_learned
+     FROM words w
+     LEFT JOIN word_progress wp ON wp.word_id = w.id
+     WHERE w.id = ?`,
+    wordId,
+  );
+}
+
 export function getDueWords(): WordWithProgress[] {
   const db = getDatabase();
   const now = new Date().toISOString();
