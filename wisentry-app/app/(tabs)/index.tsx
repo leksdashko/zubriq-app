@@ -1,9 +1,11 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useStats } from '@/src/hooks/useStats';
 import { StatCard } from '@/src/components/StatCard';
 import { Button } from '@/src/components/Button';
 import { colors, typography, spacing } from '@/src/theme';
+
+const logo = require('@/assets/images/splash-icon.png');
 
 export default function HomeScreen() {
   const stats = useStats();
@@ -12,6 +14,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <Image source={logo} style={styles.logo} />
         <Text style={styles.title}>Wisentry</Text>
         <Text style={styles.subtitle}>Your vocabulary trainer</Text>
       </View>
@@ -55,6 +58,11 @@ const styles = StyleSheet.create({
   header: {
     paddingVertical: spacing['3xl'],
     alignItems: 'center',
+  },
+  logo: {
+    width: 120,
+    height: 120,
+    marginBottom: spacing.sm,
   },
   title: {
     ...typography.h1,
